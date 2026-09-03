@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architectural Toolkit</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .copyable {
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+        .copyable:hover {
+            background-color: rgba(14, 165, 233, 0.05);
+        }
+        .copied-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .copied-toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-[#1c3b6a] text-slate-800 font-sans antialiased min-h-screen p-6">
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <header class="border-b border-slate-700 pb-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Architectural Toolkit</h1>
+                <p class="text-sm text-slate-300">A practical toolkit of calculators and quick-reference tools for architects, designers, and building professionals.</p>
+            </div>
+        </header>
+
+        <!-- CONTAINER -->
+        <div class="space-y-6">
+
+            <!-- MODULE 1: MULTI-UNIT ARCHITECTURAL CONVERTERS & SPACE CALCULATOR -->
+            <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
+                <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
+                        Length, Area & Space Converters
+                    </span>
+                    <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </summary>
+                
+                <div class="px-6 pb-6 space-y-8 border-t border-slate-100 pt-6">
+                    <!-- Length Converter Sub-Module -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Length Converter</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- INPUT PANEL -->
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Input Unit Selection</label>
+                                <select id="inputUnit" size="6" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="runConversion()">
+                                    <option value="mm">Millimetres (mm)</option>
+                                    <option value="cm">Centimetres (cm)</option>
+                                    <option value="m">Metres (m)</option>
+                                    <option value="in">Inches (in)</option>
+                                    <option value="ft">Feet (decimal ft)</option>
+                                    <option value="ft_in" selected>Feet & Inches (e.g. 10'-6")</option>
+                                </select>
+                                <div>
+                                    <label class="block text-xs text-slate-500 mb-1">Input Value</label>
+                                    <input type="text" id="inputValue" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="runConversion()">
+                                    <p class="text-xs text-slate-400 mt-1">For Feet & Inches, use formats like: <span class="text-slate-600">10-6</span>, <span class="text-slate-600">10ft 6in</span>, or <span class="text-slate-600">10.5</span></p>
+                                </div>
+                            </div>
+
+                            <!-- OUTPUT PANEL -->
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Output Unit Selection</label>
+                                <select id="outputUnit" size="6" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="runConversion()">
+                                    <option value="mm" selected>Millimetres (mm)</option>
+                                    <option value="cm">Centimetres (cm)</option>
+                                    <option value="m">Metres (m)</option>
+                                    <option value="in">Inches (in)</option>
+                                    <option value="ft">Feet (decimal ft)</option>
+                                    <option value="ft_in">Feet & Inches (e.g. 10'-6")</option>
+                                </select>
+
+                                <!-- Standard Output Wrapper (for mm, cm, m, in, ft) -->
+                                <div id="standardOutputWrapper">
+                                    <label class="block text-xs text-slate-500 mb-1">Converted Result <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
+                                    <input type="text" id="outputValue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-lg px-4 py-2.5 text-emerald-600 font-mono font-bold focus:outline-none copyable" onclick="copyValue(this)">
+                                </div>
+
+                                <!-- Dual Output Wrapper (for Feet & Inches output) -->
+                                <div id="ftInOutputWrapper" class="hidden space-y-3">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs text-slate-500 mb-1">Ft + Frac <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
+                                            <input type="text" id="outputValFrac" readonly class="w-full bg-slate-100 border border-slate-200 rounded-lg px-3 py-2.5 text-emerald-600 font-mono font-bold focus:outline-none copyable text-sm" onclick="copyValue(this)">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-slate-500 mb-1">Ft + Dec <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
+                                            <input type="text" id="outputValDec" readonly class="w-full bg-slate-100 border border-slate-200 rounded-lg px-3 py-2.5 text-emerald-600 font-mono font-bold focus:outline-none copyable text-sm" onclick="copyValue(this)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Area Converter Sub-Module -->
+                    <div class="space-y-6 pt-6 border-t border-slate-100">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Area Converter</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- AREA INPUT PANEL -->
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Input Area Unit</label>
+                                <select id="inputAreaUnit" size="7" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="runAreaConversion()">
+                                    <option value="sq_mm">Square Millimetres (mm²)</option>
+                                    <option value="sq_cm">Square Centimetres (cm²)</option>
+                                    <option value="sq_m" selected>Square Metres (m²)</option>
+                                    <option value="sq_in">Square Inches (in²)</option>
+                                    <option value="sq_ft">Square Feet (ft²)</option>
+                                    <option value="acres">Acres</option>
+                                    <option value="hectares">Hectares</option>
+                                </select>
+                                <div>
+                                    <label class="block text-xs text-slate-500 mb-1">Input Area Value</label>
+                                    <input type="number" id="inputAreaValue" value="0" step="any" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="runAreaConversion()">
+                                </div>
+                            </div>
+
+                            <!-- AREA OUTPUT PANEL -->
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Output Area Unit</label>
+                                <select id="outputAreaUnit" size="7" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="runAreaConversion()">
+                                    <option value="sq_mm">Square Millimetres (mm²)</option>
+                                    <option value="sq_cm">Square Centimetres (cm²)</option>
+                                    <option value="sq_m">Square Metres (m²)</option>
+                                    <option value="sq_in">Square Inches (in²)</option>
+                                    <option value="sq_ft" selected>Square Feet (ft²)</option>
+                                    <option value="acres">Acres</option>
+                                    <option value="hectares">Hectares</option>
+                                </select>
+                                <div>
+                                    <label class="block text-xs text-slate-500 mb-1">Converted Area Result (Up to 6 Decimals) <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
+                                    <input type="text" id="outputAreaValue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-lg px-4 py-2.5 text-emerald-600 font-mono font-bold focus:outline-none copyable" onclick="copyValue(this)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Space Calculator Sub-Module -->
+                    <div class="space-y-6 pt-6 border-t border-slate-100">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Space Calculator (Length & Width to Area)</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Dimension Unit Type</label>
+                                <select id="spaceUnitType" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="calculateSpace()">
+                                    <option value="ft_in" selected>Feet & Inches (e.g. 12'-0")</option>
+                                    <option value="decimal_ft">Decimal Feet (ft)</option>
+                                    <option value="mm">Millimetres (mm)</option>
+                                    <option value="m">Metres (m)</option>
+                                </select>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Length</label>
+                                <input type="text" id="spaceLength" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateSpace()">
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Width</label>
+                                <input type="text" id="spaceWidth" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateSpace()">
+                            </div>
+                        </div>
+
+                        <!-- Space Results Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resSpaceSqFt')">
+                                <span class="block text-xs text-slate-500 mb-1">Area in Imperial <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></span>
+                                <span id="resSpaceSqFt" class="font-mono text-sky-600 text-xl font-bold">0.00 sq ft</span>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resSpaceSqM')">
+                                <span class="block text-xs text-slate-500 mb-1">Area in Metric <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></span>
+                                <span id="resSpaceSqM" class="font-mono text-emerald-600 text-xl font-bold">0.00 sq m</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- MODULE 2: ARCHITECTURAL SCALE FACTOR CONVERTER -->
+            <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
+                <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        Architectural Imperial Scale Converter
+                    </span>
+                    <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </summary>
+
+                <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Common Scale Presets -->
+                        <div class="space-y-3">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Common Scale Presets</label>
+                            <select id="scalePreset" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="applyScalePreset()">
+                                <option value="3in">3" = 1'-0" (Scale 4)</option>
+                                <option value="1_5in">1-1/2" = 1'-0" (Scale 8)</option>
+                                <option value="1in">1" = 1'-0" (Scale 12)</option>
+                                <option value="3_4in">3/4" = 1'-0" (Scale 16)</option>
+                                <option value="1_2in">1/2" = 1'-0" (Scale 24)</option>
+                                <option value="3_8in">3/8" = 1'-0" (Scale 32)</option>
+                                <option value="1_4in" selected>1/4" = 1'-0" (Scale 48)</option>
+                                <option value="3_16in">3/16" = 1'-0" (Scale 64)</option>
+                                <option value="1_8in">1/8" = 1'-0" (Scale 96)</option>
+                                <option value="3_32in">3/32" = 1'-0" (Scale 128)</option>
+                                <option value="1_16in">1/16" = 1'-0" (Scale 192)</option>
+                                <option value="1_32in">1/32" = 1'-0" (Scale 384)</option>
+                                <option value="1_64in">1/64" = 1'-0" (Scale 768)</option>
+                            </select>
+                        </div>
+
+                        <!-- Custom Fraction Input -->
+                        <div class="space-y-3">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Custom Scale (X inches = 1'-0")</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="customFractionInput" value="1/4" placeholder="e.g. 1/64, 3/8, 0.25" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateCustomScale()">
+                                <span class="self-center text-xs text-slate-500 font-mono whitespace-nowrap">= 1'-0"</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Accepts fractions (e.g. <span class="text-slate-600">1/64</span>) or decimals (e.g. <span class="text-slate-600">0.015625</span>)</p>
+                        </div>
+                    </div>
+
+                    <!-- Scale Results Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resScaleNotation')">
+                            <span class="block text-xs text-slate-500 mb-1">Selected Scale Notation <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></span>
+                            <span id="resScaleNotation" class="font-mono text-sky-600 text-xl font-bold">1/4" = 1'-0"</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resScaleFactor')">
+                            <span class="block text-xs text-slate-500 mb-1">Calculated Scale Factor <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></span>
+                            <span id="resScaleFactor" class="font-mono text-emerald-600 text-xl font-bold">48</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- MODULE 3: DUAL STAIR GEOMETRY ANALYZER -->
+            <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
+                <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        Stair Geometry Analyzer
+                    </span>
+                    <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </summary>
+
+                <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Floor-to-Floor Height (mm)</label>
+                        <input type="number" id="stairTotalRise" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="onTotalRiseInput()">
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-lg border border-sky-100 space-y-3">
+                        <div class="text-xs font-semibold text-sky-600 uppercase tracking-wider">Output 1: Minimum Risers Solution (Max 180mm Rise)</div>
+                        <div class="grid grid-cols-3 gap-2 text-center pt-1">
+                            <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRisers')">
+                                <span class="block text-[10px] text-slate-400">Risers Count <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                <span id="optRisers" class="font-mono text-emerald-600 font-bold text-base">0</span>
+                            </div>
+                            <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRise')">
+                                <span class="block text-[10px] text-slate-400">Rise per Step <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                <span id="optRise" class="font-mono text-slate-800 font-bold text-base">0.0 mm</span>
+                            </div>
+                            <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRun')">
+                                <span class="block text-[10px] text-slate-400">Default Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                <span id="optRun" class="font-mono text-slate-800 font-bold text-base">280 mm</span>
+                            </div>
+                        </div>
+                        <div id="landingNoticeContainer" class="bg-white p-2.5 rounded border border-slate-200 flex justify-between items-center text-xs shadow-2xs">
+                            <span class="text-slate-500">Required Landings (Flight &gt; 3.7m):</span>
+                            <span id="optLandings" class="font-mono text-amber-600 font-bold">0 Landings</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 pt-2 border-t border-slate-100">
+                        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Custom Target Inputs</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Desired Number of Risers</label>
+                                <input type="number" id="stairTargetRisersCount" value="0" step="1" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateStairs()" placeholder="Auto-calculated if 0">
+                                <span class="text-[10px] text-slate-400 mt-0.5 block">Leave 0 to use minimum risers</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Tread Run / Depth (mm)</label>
+                                <input type="number" id="stairRun" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateStairs()">
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                            <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Output 2: Custom Target Layout Analysis</div>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customRisers')">
+                                    <span class="block text-[10px] text-slate-400">Result Risers <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                    <span id="customRisers" class="font-mono text-slate-800 font-bold text-base">0</span>
+                                </div>
+                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customRise')">
+                                    <span class="block text-[10px] text-slate-400">Actual Rise <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                    <span id="customRise" class="font-mono text-slate-800 font-bold text-base">0.0 mm</span>
+                                </div>
+                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customTotalRun')">
+                                    <span class="block text-[10px] text-slate-400">Total Run (Go) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                    <span id="customTotalRun" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
+                                </div>
+                            </div>
+                            <div id="stairComplianceBox" class="p-3 rounded-lg border text-xs transition-colors mt-2">
+                                <span id="stairComplianceText" class="font-medium">Evaluating compliance...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- MODULE 4: RAMP CALCULATOR -->
+            <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
+                <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                        Ramp Calculator
+                    </span>
+                    <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </summary>
+
+                <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Slope Ratio (1 : X)</label>
+                            <input type="number" id="rampRatio" value="0" step="any" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="onRampRatioInput()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Slope Percentage (%)</label>
+                            <input type="number" id="rampPercent" value="0" step="any" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="onRampPercentInput()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <!-- Mode A: Given Rise -> Find Run -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                            <span class="block text-xs font-semibold text-sky-600 uppercase tracking-wider">Calculate Run from Rise &amp; Ratio</span>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Vertical Rise (mm)</label>
+                                <input type="number" id="rampRise" value="0" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateRampFromRise()">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Required Horizontal Run <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
+                                <div id="rampRunResult" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-emerald-600 font-mono font-bold copyable" onclick="copyBoxValue(this, 'rampRunResult')">0 mm (0.00 m)</div>
+                            </div>
+                            <div id="rampLandingNoticeRise" class="p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500">
+                                Evaluating ramp compliance...
+                            </div>
+                        </div>
+
+                        <!-- Mode B: Given Run & Rise -> Find Slope & Height -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                            <span class="block text-xs font-semibold text-sky-600 uppercase tracking-wider">Calculate Slope from Rise &amp; Run</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Vertical Rise (mm)</label>
+                                    <input type="number" id="rampCheckRise" value="0" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-sky-500" oninput="calculateSlopeFromDimensions()">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Horizontal Run (mm)</label>
+                                    <input type="number" id="rampCheckRun" value="0" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-sky-500" oninput="calculateSlopeFromDimensions()">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <div class="bg-white p-2.5 rounded border border-slate-200 text-center copyable" onclick="copyBoxValue(this, 'resCheckRatio')">
+                                    <span class="block text-[10px] text-slate-400">Slope Ratio <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                    <span id="resCheckRatio" class="font-mono text-sky-600 font-bold text-sm">N/A</span>
+                                </div>
+                                <div class="bg-white p-2.5 rounded border border-slate-200 text-center copyable" onclick="copyBoxValue(this, 'resCheckPercent')">
+                                    <span class="block text-[10px] text-slate-400">Slope % <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                    <span id="resCheckPercent" class="font-mono text-emerald-600 font-bold text-sm">0.00%</span>
+                                </div>
+                            </div>
+                            <div id="rampCheckNotice" class="p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500">
+                                Enter rise and run to evaluate slope...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- MODULE 7: SPOT ELEVATION CALCULATOR -->
+            <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
+                <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Spot Elevation & Grade Slope Calculator
+                    </span>
+                    <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </summary>
+
+                <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
+                    <!-- Row 1: Inputs -->
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Input Units</label>
+                            <select id="spotGlobalUnit" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="calculateSpotElevations()">
+                                <option value="m" selected>Metres (m)</option>
+                                <option value="mm">Millimetres (mm)</option>
+                                <option value="ft">Feet (decimal ft)</option>
+                                <option value="ft_in">Feet & Inches</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Spot Elevation 1</label>
+                            <input type="text" id="spotElev1" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateSpotElevations()">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Spot Elevation 2 <span class="text-[10px] text-sky-600">(or Calc)</span></label>
+                            <input type="text" id="spotElev2" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateSpotElevations()">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Horizontal Distance</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="spotDistVal" value="0" step="any" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateSpotElevations()">
+                                <select id="spotDistUnit" class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-sky-500" onchange="calculateSpotElevations()">
+                                    <option value="m" selected>m</option>
+                                    <option value="mm">mm</option>
+                                    <option value="ft">ft</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Slope (% or 1:X)</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="spotSlopeInput" value="0" step="any" min="0" placeholder="e.g. 5 or 12" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500 text-xs" oninput="calculateSpotFromSlope()">
+                                <select id="spotSlopeType" class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-sky-500" onchange="calculateSpotFromSlope()">
+                                    <option value="pct" selected>%</option>
+                                    <option value="ratio">1:X</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Results Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 pt-2">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotDiffM')">
+                            <span class="block text-xs text-slate-500 mb-1">Difference (m) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="spotDiffM" class="font-mono text-sky-600 text-lg font-bold">0.000 m</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotDiffMm')">
+                            <span class="block text-xs text-slate-500 mb-1">Difference (mm) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="spotDiffMm" class="font-mono text-slate-800 text-lg font-bold">0 mm</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotDiffFtIn')">
+                            <span class="block text-xs text-slate-500 mb-1">Difference (ft-in) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="spotDiffFtIn" class="font-mono text-sky-700 text-lg font-bold">0'-0"</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotSlopePct')">
+                            <span class="block text-xs text-slate-500 mb-1">Slope % <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="spotSlopePct" class="font-mono text-emerald-600 text-lg font-bold">0.00%</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotSlopeRatio')">
+                            <span class="block text-xs text-slate-500 mb-1">Slope Ratio <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="spotSlopeRatio" class="font-mono text-emerald-700 text-lg font-bold">N/A</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- MODULE 5: WALL ASSEMBLY & THERMAL CALCULATOR (Outside to Inside Flow) -->
+            <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
+                <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        Wall Assembly Thickness & Thermal Performance Analyzer (Outside to Inside)
+                    </span>
+                    <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </summary>
+
+                <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
+                    <!-- 1. Exterior Cladding -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">1. Exterior Cladding</label>
+                        <select id="claddingType" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="handleCladdingChange()">
+                            <option value="brick">Brick/Stone Veneer (90mm + 25mm Air Gap)</option>
+                            <option value="stucco_50">Stucco + 50mm Integrated Insulation</option>
+                            <option value="stucco_64">Stucco + 64mm Integrated Insulation</option>
+                            <option value="stucco_75">Stucco + 75mm Integrated Insulation</option>
+                            <option value="wood_siding">19mm Wood Siding + 19mm Air Gap</option>
+                            <option value="metal_siding">Metal Siding (22mm + 19mm Air Gap)</option>
+                            <option value="metal_comp">Metal Composite Siding (5mm + 60mm Air Gap)</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. Continuous Exterior Insulation (ci) -->
+                    <div id="ciSectionWrapper" class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-4 transition-all">
+                        <div class="flex justify-between items-center">
+                            <div class="text-xs font-semibold text-sky-600 uppercase tracking-wider">2. Continuous Exterior Insulation (ci)</div>
+                            <span id="ciStatusBadge" class="text-[10px] bg-white text-slate-600 px-2 py-0.5 rounded border border-slate-200 shadow-2xs">Active Control</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Insulation Material Type</label>
+                                <select id="ciType" class="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="calculateWall()">
+                                    <option value="rigid">Rigid Board Insulation (XPS / ISO ~R-4 per inch)</option>
+                                    <option value="batt">Fiber Batt / Mineral Wool (~R-4 per inch)</option>
+                                    <option value="spray">Closed-Cell Spray Foam (~R-6 per inch)</option>
+                                    <option value="none">None (R-0 / RSI 0)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Thickness (mm)</label>
+                                <input type="number" id="ciThicknessMm" value="50" step="1" min="0" max="300" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateWall()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Exterior Sheathing -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">3. Exterior Sheathing</label>
+                        <select id="sheathingType" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="calculateWall()">
+                            <option value="plywood_12">12.7mm (1/2") Plywood / OSB</option>
+                            <option value="plywood_15">15.9mm (5/8") Plywood / OSB</option>
+                            <option value="plywood_19">19.0mm (3/4") Plywood / OSB</option>
+                            <option value="densglass_12">12.7mm (1/2") DensGlass Sheathing</option>
+                            <option value="densglass_15">15.9mm (5/8") DensGlass Sheathing</option>
+                        </select>
+                    </div>
+
+                    <!-- 4. Stud Framing Type -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">4. Stud Framing Type</label>
+                        <select id="studFraming" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="calculateWall()">
+                            <option value="wood_2x6">Wood Stud 2x6 @ 16" o.c. (140mm)</option>
+                            <option value="wood_2x4">Wood Stud 2x4 @ 16" o.c. (89mm)</option>
+                            <option value="steel_92">92mm Steel Studs @ 16" o.c.</option>
+                            <option value="steel_152">152mm Steel Studs @ 16" o.c.</option>
+                            <option value="steel_203">203mm Steel Studs @ 16" o.c.</option>
+                        </select>
+                    </div>
+
+                    <!-- 5. Cavity Insulation -->
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">5. Cavity Insulation Performance</label>
+                            <select id="cavityInsul" class="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="toggleSprayFoam(); calculateWall();">
+                                <option value="rsi_3.8">R-22 / RSI 3.8 (Fiberglass Batt)</option>
+                                <option value="rsi_2.4">R-14 / RSI 2.4 (Fiberglass Batt)</option>
+                                <option value="rsi_4.2">R-24 / RSI 4.2 (High Density Batt)</option>
+                                <option value="spray_foam">Closed Cell Spray Foam (Custom Thickness)</option>
+                                <option value="none">None (Empty Cavity)</option>
+                            </select>
+                        </div>
+
+                        <!-- Conditional Cavity Spray Foam Row -->
+                        <div id="sprayFoamRow" class="hidden bg-sky-50/50 p-4 rounded-lg border border-sky-200">
+                            <label class="block text-xs font-medium text-sky-800 mb-1">Cavity Spray Foam Thickness (mm)</label>
+                            <input type="number" id="foamThicknessMm" value="90" step="5" min="10" max="300" class="w-full bg-white border border-sky-300 rounded-lg px-4 py-2 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateWall()">
+                            <span class="text-[10px] text-slate-500 mt-1 block">Rate: ~R-6 per inch (~R-0.236 per mm)</span>
+                        </div>
+                    </div>
+
+                    <!-- 6. Interior Sheathing / Finish -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">6. Interior Sheathing / Finish</label>
+                        <select id="interiorFinish" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="calculateWall()">
+                            <option value="gypsum_12">12.7mm Gypsum Board (Drywall)</option>
+                            <option value="gypsum_15">15.9mm Type X Gypsum Board</option>
+                        </select>
+                    </div>
+
+                    <!-- RESULTS -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs md:col-span-1 copyable" onclick="copyBoxValue(this, 'resThickness')">
+                            <span class="block text-xs text-slate-500 mb-1">Total Assembly Thickness <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="resThickness" class="font-mono text-slate-900 text-xl font-bold">295 mm</span>
+                            <span id="resThicknessIn" class="block text-xs text-slate-400 mt-1">11.6 inches</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs md:col-span-1 copyable" onclick="copyBoxValue(this, 'resInsulationOnly')">
+                            <span class="block text-xs text-slate-500 mb-1">Insulation-Only Value <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="resInsulationOnly" class="font-mono text-emerald-600 text-xl font-bold">R-28 (RSI 4.9)</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs md:col-span-1 copyable" onclick="copyBoxValue(this, 'resNominal')">
+                            <span class="block text-xs text-slate-500 mb-1">Nominal R-Value <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="resNominal" class="font-mono text-sky-600 text-xl font-bold">R-31 (RSI 5.5)</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs md:col-span-1 copyable" onclick="copyBoxValue(this, 'resEffective')">
+                            <span class="block text-xs text-slate-500 mb-1">Effective R-Value <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="resEffective" class="font-mono text-emerald-700 text-xl font-bold">R-25 (RSI 4.4)</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- MODULE 6: DETERMINATION OF M/D RATIO FOR STEEL COLUMNS -->
+            <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
+                <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Determination of M/D Ratio (Steel Columns)
+                    </span>
+                    <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </summary>
+                
+                <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Column Shape Selector -->
+                        <div class="space-y-3">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Column Shape / Type</label>
+                            <select id="mdShape" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="onShapeChange()">
+                                <option value="Wide Flange Column">Wide Flange Column</option>
+                                <option value="HSS Rectangular">HSS Rectangular</option>
+                                <option value="HSS Round">HSS Round</option>
+                            </select>
+                        </div>
+
+                        <!-- Section Size Selector -->
+                        <div class="space-y-3 md:col-span-2">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Section Size Designation</label>
+                            <select id="mdSectionSize" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="onSectionSizeSelect()">
+                                <option value="">-- Select Section Size --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dimensions Row: Mass (M), Height/Depth (H) & Flange Width (B) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                        <div class="space-y-3">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Mass M (kg/m)</label>
+                            <input type="number" id="mdMass" value="0" step="any" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateMD()">
+                        </div>
+                        <div id="wrapperDimH" class="space-y-3">
+                            <label id="labelH" class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Height / Depth H (mm)</label>
+                            <input type="number" id="mdDimH" value="0" step="any" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateMD()">
+                        </div>
+                        <div class="space-y-3">
+                            <label id="labelB" class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Flange Width B (mm)</label>
+                            <input type="number" id="mdDimB" value="0" step="any" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateMD()">
+                        </div>
+                    </div>
+
+                    <!-- M/D Results Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resPerimeterMm')">
+                            <span class="block text-xs text-slate-500 mb-1">Heated Perimeter D (mm) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="resPerimeterMm" class="font-mono text-slate-900 text-lg font-bold">0 mm</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resPerimeterM')">
+                            <span class="block text-xs text-slate-500 mb-1">Heated Perimeter D (m) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="resPerimeterM" class="font-mono text-sky-600 text-lg font-bold">0.000 m</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resMDRatio')">
+                            <span class="block text-xs text-slate-500 mb-1">M / D Ratio (kg/m²) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
+                            <span id="resMDRatio" class="font-mono text-emerald-600 text-xl font-bold">0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification for Copy -->
+    <div id="copyToast" class="copied-toast">Copied numeric value to clipboard!</div>
+
+    <script>
+        // --- EMBEDDED STEEL SECTION DATABASE FROM EXCEL ---
+        const steelDatabase = {
+"W Sections": {
+                "W1100X499": { "mass": 499.0, "height": 1120, "width": 404 },
+                "W1100X433": { "mass": 433.0, "height": 1110, "width": 401 },
+                "W1100X390": { "mass": 390.0, "height": 1100, "width": 401 },
+                "W1100X343": { "mass": 343.0, "height": 1090, "width": 401 },
+                "W1000X976": { "mass": 975.0, "height": 1110, "width": 429 },
+                "W1000X883": { "mass": 883.0, "height": 1090, "width": 424 },
+                "W1000X748": { "mass": 748.0, "height": 1070, "width": 417 },
+                "W1000X642": { "mass": 642.0, "height": 1050, "width": 411 },
+                "W1000X591": { "mass": 591.0, "height": 1040, "width": 409 },
+                "W1000X554": { "mass": 554.0, "height": 1030, "width": 409 },
+                "W1000X539": { "mass": 539.0, "height": 1030, "width": 406 },
+                "W1000X483": { "mass": 483.0, "height": 1020, "width": 404 },
+                "W1000X443": { "mass": 443.0, "height": 1010, "width": 401 },
+                "W1000X412": { "mass": 412.0, "height": 1010, "width": 401 },
+                "W1000X371": { "mass": 371.0, "height": 1000, "width": 401 },
+                "W1000X321": { "mass": 321.0, "height": 991, "width": 401 },
+                "W1000X296": { "mass": 296.0, "height": 983, "width": 401 },
+                "W1000X584": { "mass": 584.0, "height": 1060, "width": 315 },
+                "W1000X494": { "mass": 494.0, "height": 1040, "width": 310 },
+                "W1000X486": { "mass": 486.0, "height": 1040, "width": 307 },
+                "W1000X438": { "mass": 438.0, "height": 1030, "width": 305 },
+                "W1000X415": { "mass": 415.0, "height": 1020, "width": 305 },
+                "W1000X393": { "mass": 393.0, "height": 1020, "width": 302 },
+                "W1000X350": { "mass": 350.0, "height": 1010, "width": 302 },
+                "W1000X314": { "mass": 314.0, "height": 1000, "width": 300 },
+                "W1000X272": { "mass": 272.0, "height": 991, "width": 300 },
+                "W1000X249": { "mass": 249.0, "height": 980, "width": 300 },
+                "W1000X222": { "mass": 222.0, "height": 970, "width": 300 },
+                "W920X1377": { "mass": 1380.0, "height": 1090, "width": 472 },
+                "W920X1269": { "mass": 1270.0, "height": 1090, "width": 462 },
+                "W920X1194": { "mass": 1190.0, "height": 1080, "width": 457 },
+                "W920X1077": { "mass": 1080.0, "height": 1060, "width": 452 },
+                "W920X970": { "mass": 970.0, "height": 1040, "width": 447 },
+                "W920X787": { "mass": 787.0, "height": 1010, "width": 437 },
+                "W920X725": { "mass": 725.0, "height": 998, "width": 434 },
+                "W920X656": { "mass": 656.0, "height": 988, "width": 432 },
+                "W920X588": { "mass": 588.0, "height": 975, "width": 427 },
+                "W920X537": { "mass": 537.0, "height": 965, "width": 424 },
+                "W920X491": { "mass": 491.0, "height": 958, "width": 422 },
+                "W920X449": { "mass": 449.0, "height": 947, "width": 424 },
+                "W920X420": { "mass": 420.0, "height": 942, "width": 422 },
+                "W920X390": { "mass": 390.0, "height": 937, "width": 422 },
+                "W920X368": { "mass": 368.0, "height": 932, "width": 419 },
+                "W920X344": { "mass": 344.0, "height": 927, "width": 419 },
+                "W920X381": { "mass": 381.0, "height": 951, "width": 310 },
+                "W920X345": { "mass": 345.0, "height": 943, "width": 307 },
+                "W920X313": { "mass": 313.0, "height": 932, "width": 310 },
+                "W920X289": { "mass": 289.0, "height": 927, "width": 307 },
+                "W920X271": { "mass": 271.0, "height": 922, "width": 307 },
+                "W920X253": { "mass": 253.0, "height": 919, "width": 305 },
+                "W920X238": { "mass": 238.0, "height": 914, "width": 305 },
+                "W920X223": { "mass": 223.0, "height": 912, "width": 305 },
+                "W920X201": { "mass": 201.0, "height": 904, "width": 305 },
+                "W840X576": { "mass": 576.0, "height": 914, "width": 411 },
+                "W840X527": { "mass": 527.0, "height": 904, "width": 409 },
+                "W840X473": { "mass": 473.0, "height": 894, "width": 406 },
+                "W840X433": { "mass": 433.0, "height": 884, "width": 404 },
+                "W840X392": { "mass": 392.0, "height": 876, "width": 401 },
+                "W840X359": { "mass": 359.0, "height": 869, "width": 404 },
+                "W840X329": { "mass": 329.0, "height": 861, "width": 401 },
+                "W840X299": { "mass": 299.0, "height": 856, "width": 399 },
+                "W840X251": { "mass": 251.0, "height": 859, "width": 292 },
+                "W840X226": { "mass": 226.0, "height": 851, "width": 295 },
+                "W840X210": { "mass": 210.0, "height": 846, "width": 292 },
+                "W840X193": { "mass": 193.0, "height": 841, "width": 292 },
+                "W840X176": { "mass": 176.0, "height": 836, "width": 292 },
+                "W760X582": { "mass": 582.0, "height": 843, "width": 396 },
+                "W760X531": { "mass": 531.0, "height": 833, "width": 394 },
+                "W760X484": { "mass": 484.0, "height": 823, "width": 391 },
+                "W760X434": { "mass": 434.0, "height": 813, "width": 389 },
+                "W760X389": { "mass": 389.0, "height": 803, "width": 386 },
+                "W760X350": { "mass": 350.0, "height": 795, "width": 384 },
+                "W760X314": { "mass": 314.0, "height": 785, "width": 384 },
+                "W760X284": { "mass": 284.0, "height": 780, "width": 381 },
+                "W760X257": { "mass": 257.0, "height": 772, "width": 381 },
+                "W760X220": { "mass": 220.0, "height": 780, "width": 267 },
+                "W760X196": { "mass": 196.0, "height": 770, "width": 267 },
+                "W760X185": { "mass": 185.0, "height": 767, "width": 267 },
+                "W760X173": { "mass": 173.0, "height": 762, "width": 267 },
+                "W760X161": { "mass": 161.0, "height": 757, "width": 267 },
+                "W760X147": { "mass": 147.0, "height": 754, "width": 267 },
+                "W760X134": { "mass": 134.0, "height": 749, "width": 264 },
+                "W690X802": { "mass": 802.0, "height": 826, "width": 389 },
+                "W690X548": { "mass": 548.0, "height": 772, "width": 373 },
+                "W690X500": { "mass": 500.0, "height": 762, "width": 371 },
+                "W690X457": { "mass": 457.0, "height": 752, "width": 366 },
+                "W690X419": { "mass": 419.0, "height": 744, "width": 366 },
+                "W690X384": { "mass": 384.0, "height": 737, "width": 363 },
+                "W690X350": { "mass": 350.0, "height": 729, "width": 361 },
+                "W690X323": { "mass": 323.0, "height": 721, "width": 358 },
+                "W690X289": { "mass": 289.0, "height": 714, "width": 356 },
+                "W690X265": { "mass": 265.0, "height": 706, "width": 358 },
+                "W690X240": { "mass": 240.0, "height": 701, "width": 356 },
+                "W690X217": { "mass": 217.0, "height": 696, "width": 356 },
+                "W690X192": { "mass": 192.0, "height": 701, "width": 254 },
+                "W690X170": { "mass": 170.0, "height": 693, "width": 257 },
+                "W690X152": { "mass": 152.0, "height": 688, "width": 254 },
+                "W690X140": { "mass": 140.0, "height": 683, "width": 254 },
+                "W690X125": { "mass": 125.0, "height": 678, "width": 254 },
+                "W610X551": { "mass": 551.0, "height": 711, "width": 348 },
+                "W610X498": { "mass": 498.0, "height": 699, "width": 343 },
+                "W610X455": { "mass": 455.0, "height": 688, "width": 340 },
+                "W610X415": { "mass": 415.0, "height": 678, "width": 338 },
+                "W610X372": { "mass": 372.0, "height": 668, "width": 335 },
+                "W610X341": { "mass": 341.0, "height": 660, "width": 333 },
+                "W610X307": { "mass": 307.0, "height": 653, "width": 330 },
+                "W610X285": { "mass": 285.0, "height": 648, "width": 330 },
+                "W610X262": { "mass": 262.0, "height": 640, "width": 328 },
+                "W610X241": { "mass": 241.0, "height": 635, "width": 330 },
+                "W610X217": { "mass": 217.0, "height": 627, "width": 328 },
+                "W610X195": { "mass": 195.0, "height": 622, "width": 328 },
+                "W610X174": { "mass": 174.0, "height": 617, "width": 325 },
+                "W610X155": { "mass": 155.0, "height": 612, "width": 325 },
+                "W610X153": { "mass": 153.0, "height": 622, "width": 229 },
+                "W610X140": { "mass": 140.0, "height": 617, "width": 230 },
+                "W610X125": { "mass": 125.0, "height": 612, "width": 229 },
+                "W610X113": { "mass": 113.0, "height": 607, "width": 228 },
+                "W610X101": { "mass": 101.0, "height": 602, "width": 228 },
+                "W610X92": { "mass": 92.0, "height": 602, "width": 179 },
+                "W610X82": { "mass": 82.0, "height": 599, "width": 178 },
+                "W530X409": { "mass": 409.0, "height": 612, "width": 328 },
+                "W530X369": { "mass": 369.0, "height": 602, "width": 325 },
+                "W530X332": { "mass": 332.0, "height": 594, "width": 323 },
+                "W530X300": { "mass": 300.0, "height": 584, "width": 320 },
+                "W530X272": { "mass": 272.0, "height": 577, "width": 318 },
+                "W530X248": { "mass": 248.0, "height": 572, "width": 315 },
+                "W530X219": { "mass": 219.0, "height": 561, "width": 318 },
+                "W530X196": { "mass": 196.0, "height": 554, "width": 315 },
+                "W530X182": { "mass": 182.0, "height": 551, "width": 315 },
+                "W530X165": { "mass": 165.0, "height": 546, "width": 312 },
+                "W530X150": { "mass": 150.0, "height": 544, "width": 312 },
+                "W530X138": { "mass": 138.0, "height": 549, "width": 214 },
+                "W530X123": { "mass": 123.0, "height": 544, "width": 212 },
+                "W530X109": { "mass": 109.0, "height": 538, "width": 211 },
+                "W530X101": { "mass": 101.0, "height": 536, "width": 210 },
+                "W530X92": { "mass": 92.0, "height": 533, "width": 209 },
+                "W530X82": { "mass": 82.0, "height": 528, "width": 209 },
+                "W530X72": { "mass": 72.0, "height": 523, "width": 207 },
+                "W530X85": { "mass": 85.0, "height": 536, "width": 167 },
+                "W530X74": { "mass": 74.0, "height": 528, "width": 166 },
+                "W530X66": { "mass": 66.0, "height": 526, "width": 165 },
+                "W460X464": { "mass": 464.0, "height": 566, "width": 305 },
+                "W460X421": { "mass": 421.0, "height": 556, "width": 302 },
+                "W460X384": { "mass": 384.0, "height": 546, "width": 300 },
+                "W460X349": { "mass": 349.0, "height": 536, "width": 297 },
+                "W460X315": { "mass": 315.0, "height": 526, "width": 295 },
+                "W460X286": { "mass": 286.0, "height": 518, "width": 292 },
+                "W460X260": { "mass": 260.0, "height": 508, "width": 290 },
+                "W460X235": { "mass": 235.0, "height": 500, "width": 287 },
+                "W460X213": { "mass": 213.0, "height": 495, "width": 284 },
+                "W460X193": { "mass": 193.0, "height": 490, "width": 284 },
+                "W460X177": { "mass": 177.0, "height": 483, "width": 287 },
+                "W460X158": { "mass": 158.0, "height": 475, "width": 284 },
+                "W460X144": { "mass": 144.0, "height": 472, "width": 282 },
+                "W460X128": { "mass": 128.0, "height": 467, "width": 282 },
+                "W460X113": { "mass": 113.0, "height": 462, "width": 279 },
+                "W460X106": { "mass": 106.0, "height": 470, "width": 194 },
+                "W460X97": { "mass": 97.0, "height": 467, "width": 193 },
+                "W460X89": { "mass": 89.0, "height": 462, "width": 192 },
+                "W460X82": { "mass": 82.0, "height": 460, "width": 191 },
+                "W460X74": { "mass": 74.0, "height": 457, "width": 191 },
+                "W460X68": { "mass": 68.0, "height": 460, "width": 154 },
+                "W460X60": { "mass": 60.0, "height": 455, "width": 153 },
+                "W460X52": { "mass": 52.0, "height": 450, "width": 152 },
+                "W410X149": { "mass": 149.0, "height": 432, "width": 264 },
+                "W410X132": { "mass": 132.0, "height": 427, "width": 264 },
+                "W410X114": { "mass": 114.0, "height": 419, "width": 262 },
+                "W410X100": { "mass": 100.0, "height": 414, "width": 259 },
+                "W410X85": { "mass": 85.0, "height": 417, "width": 181 },
+                "W410X75": { "mass": 75.0, "height": 414, "width": 180 },
+                "W410X67": { "mass": 67.0, "height": 409, "width": 179 },
+                "W410X60": { "mass": 60.0, "height": 406, "width": 178 },
+                "W410X53": { "mass": 53.0, "height": 404, "width": 178 },
+                "W410X46.1": { "mass": 46.1, "height": 404, "width": 140 },
+                "W410X38.8": { "mass": 38.8, "height": 399, "width": 140 },
+                "W360X1299": { "mass": 1300.0, "height": 599, "width": 478 },
+                "W360X1202": { "mass": 1200.0, "height": 579, "width": 472 },
+                "W360X1086": { "mass": 1090.0, "height": 569, "width": 455 },
+                "W360X990": { "mass": 990.0, "height": 549, "width": 450 },
+                "W360X900": { "mass": 900.0, "height": 531, "width": 442 },
+                "W360X818": { "mass": 818.0, "height": 513, "width": 437 },
+                "W360X744": { "mass": 744.0, "height": 498, "width": 432 },
+                "W360X677": { "mass": 677.0, "height": 483, "width": 427 },
+                "W360X634": { "mass": 634.0, "height": 475, "width": 424 },
+                "W360X592": { "mass": 592.0, "height": 465, "width": 422 },
+                "W360X551": { "mass": 551.0, "height": 455, "width": 419 },
+                "W360X509": { "mass": 509.0, "height": 445, "width": 417 },
+                "W360X463": { "mass": 463.0, "height": 434, "width": 411 },
+                "W360X421": { "mass": 421.0, "height": 424, "width": 409 },
+                "W360X382": { "mass": 382.0, "height": 417, "width": 406 },
+                "W360X347": { "mass": 347.0, "height": 406, "width": 404 },
+                "W360X314": { "mass": 314.0, "height": 399, "width": 401 },
+                "W360X287": { "mass": 287.0, "height": 394, "width": 399 },
+                "W360X262": { "mass": 262.0, "height": 386, "width": 399 },
+                "W360X237": { "mass": 237.0, "height": 381, "width": 396 },
+                "W360X216": { "mass": 216.0, "height": 376, "width": 394 },
+                "W360X196": { "mass": 196.0, "height": 373, "width": 373 },
+                "W360X179": { "mass": 179.0, "height": 368, "width": 373 },
+                "W360X162": { "mass": 162.0, "height": 363, "width": 371 },
+                "W360X147": { "mass": 147.0, "height": 361, "width": 371 },
+                "W360X134": { "mass": 134.0, "height": 356, "width": 368 },
+                "W360X122": { "mass": 122.0, "height": 363, "width": 257 },
+                "W360X110": { "mass": 110.0, "height": 361, "width": 257 },
+                "W360X101": { "mass": 101.0, "height": 356, "width": 254 },
+                "W360X91": { "mass": 91.0, "height": 353, "width": 254 },
+                "W360X79": { "mass": 79.0, "height": 353, "width": 205 },
+                "W360X72": { "mass": 72.0, "height": 351, "width": 204 },
+                "W360X64": { "mass": 64.0, "height": 348, "width": 203 },
+                "W360X57.8": { "mass": 57.8, "height": 358, "width": 172 },
+                "W360X51": { "mass": 51.0, "height": 356, "width": 171 },
+                "W360X44": { "mass": 44.0, "height": 351, "width": 171 },
+                "W360X39": { "mass": 39.0, "height": 353, "width": 128 },
+                "W360X32.9": { "mass": 32.9, "height": 348, "width": 127 },
+                "W310X500": { "mass": 500.0, "height": 427, "width": 340 },
+                "W310X454": { "mass": 454.0, "height": 414, "width": 335 },
+                "W310X415": { "mass": 415.0, "height": 404, "width": 333 },
+                "W310X375": { "mass": 375.0, "height": 391, "width": 330 },
+                "W310X342": { "mass": 342.0, "height": 384, "width": 328 },
+                "W310X313": { "mass": 313.0, "height": 373, "width": 325 },
+                "W310X283": { "mass": 283.0, "height": 366, "width": 323 },
+                "W310X253": { "mass": 253.0, "height": 356, "width": 320 },
+                "W310X226": { "mass": 226.0, "height": 348, "width": 318 },
+                "W310X202": { "mass": 202.0, "height": 340, "width": 315 },
+                "W310X179": { "mass": 179.0, "height": 333, "width": 312 },
+                "W310X158": { "mass": 158.0, "height": 328, "width": 310 },
+                "W310X143": { "mass": 143.0, "height": 323, "width": 310 },
+                "W310X129": { "mass": 129.0, "height": 318, "width": 307 },
+                "W310X117": { "mass": 117.0, "height": 315, "width": 307 },
+                "W310X107": { "mass": 107.0, "height": 312, "width": 305 },
+                "W310X97": { "mass": 97.0, "height": 307, "width": 305 },
+                "W310X86": { "mass": 86.0, "height": 310, "width": 254 },
+                "W310X79": { "mass": 79.0, "height": 307, "width": 254 },
+                "W310X74": { "mass": 74.0, "height": 310, "width": 205 },
+                "W310X67": { "mass": 67.0, "height": 307, "width": 204 },
+                "W310X60": { "mass": 60.0, "height": 302, "width": 203 },
+                "W310X52": { "mass": 52.0, "height": 318, "width": 167 },
+                "W310X44.5": { "mass": 44.5, "height": 312, "width": 166 },
+                "W310X38.7": { "mass": 38.7, "height": 310, "width": 165 },
+                "W310X32.7": { "mass": 32.7, "height": 312, "width": 102 },
+                "W310X28.3": { "mass": 28.3, "height": 310, "width": 102 },
+                "W310X23.8": { "mass": 23.8, "height": 305, "width": 101 },
+                "W310X21": { "mass": 21.0, "height": 302, "width": 101 },
+                "W250X167": { "mass": 167.0, "height": 290, "width": 264 },
+                "W250X149": { "mass": 149.0, "height": 282, "width": 262 },
+                "W250X131": { "mass": 131.0, "height": 274, "width": 262 },
+                "W250X115": { "mass": 115.0, "height": 269, "width": 259 },
+                "W250X101": { "mass": 101.0, "height": 264, "width": 257 },
+                "W250X89": { "mass": 89.0, "height": 259, "width": 257 },
+                "W250X80": { "mass": 80.0, "height": 257, "width": 254 },
+                "W250X73": { "mass": 73.0, "height": 254, "width": 254 },
+                "W250X67": { "mass": 67.0, "height": 257, "width": 204 },
+                "W250X58": { "mass": 58.0, "height": 252, "width": 203 },
+                "W250X49.1": { "mass": 49.1, "height": 247, "width": 202 },
+                "W250X44.8": { "mass": 44.8, "height": 267, "width": 148 },
+                "W250X38.5": { "mass": 38.5, "height": 262, "width": 147 },
+                "W250X32.7": { "mass": 32.7, "height": 259, "width": 146 },
+                "W250X28.4": { "mass": 28.4, "height": 259, "width": 102 },
+                "W250X25.3": { "mass": 25.3, "height": 257, "width": 102 },
+                "W250X22.3": { "mass": 22.3, "height": 254, "width": 102 },
+                "W250X17.9": { "mass": 17.9, "height": 251, "width": 101 },
+                "W200X100": { "mass": 100.0, "height": 229, "width": 210 },
+                "W200X86": { "mass": 86.0, "height": 222, "width": 209 },
+                "W200X71": { "mass": 71.0, "height": 216, "width": 206 },
+                "W200X59": { "mass": 59.0, "height": 210, "width": 205 },
+                "W200X52": { "mass": 52.0, "height": 206, "width": 204 },
+                "W200X46.1": { "mass": 46.1, "height": 203, "width": 203 },
+                "W200X41.7": { "mass": 41.7, "height": 205, "width": 166 },
+                "W200X35.9": { "mass": 35.9, "height": 201, "width": 165 },
+                "W200X31.3": { "mass": 31.3, "height": 210, "width": 134 },
+                "W200X26.6": { "mass": 26.6, "height": 207, "width": 133 },
+                "W200X22.5": { "mass": 22.5, "height": 206, "width": 102 },
+                "W200X19.3": { "mass": 19.3, "height": 203, "width": 102 },
+                "W200X15": { "mass": 15.0, "height": 200, "width": 100 },
+                "W150X37.1": { "mass": 37.1, "height": 162, "width": 154 },
+                "W150X29.8": { "mass": 29.8, "height": 157, "width": 153 },
+                "W150X22.5": { "mass": 22.5, "height": 152, "width": 152 },
+                "W150X24": { "mass": 24.0, "height": 160, "width": 102 },
+                "W150X18": { "mass": 18.0, "height": 153, "width": 102 },
+                "W150X13.5": { "mass": 13.5, "height": 150, "width": 100 },
+                "W150X13": { "mass": 13.0, "height": 148, "width": 100 },
+                "W130X28.1": { "mass": 28.1, "height": 131, "width": 128 },
+                "W130X23.8": { "mass": 23.8, "height": 127, "width": 127 },
+                "W100X19.3": { "mass": 19.3, "height": 106, "width": 103 }
+        },
+"HSS Sections": {
+                "HSS 355.6x355.6x22.2": { "mass": 223.0, "height": 356.0, "width": 356.0 },
+                "HSS 355.6x355.6x19": { "mass": 194.0, "height": 356.0, "width": 356.0 },
+                "HSS 355.6x355.6x15.9": { "mass": 164.0, "height": 356.0, "width": 356.0 },
+                "HSS 355.6x355.6x12.7": { "mass": 133.0, "height": 356.0, "width": 356.0 },
+                "HSS 355.6x355.6x9.5": { "mass": 102.0, "height": 356.0, "width": 356.0 },
+                "HSS 355.6x355.6x7.9": { "mass": 85.3, "height": 356.0, "width": 356.0 },
+                "HSS 355.6x254x15.9": { "mass": 139.0, "height": 356.0, "width": 254.0 },
+                "HSS 355.6x254x12.7": { "mass": 113.0, "height": 356.0, "width": 254.0 },
+                "HSS 355.6x254x9.5": { "mass": 86.4, "height": 356.0, "width": 254.0 },
+                "HSS 355.6x254x7.9": { "mass": 72.7, "height": 356.0, "width": 254.0 },
+                "HSS 355.6x254x6.4": { "mass": 58.7, "height": 356.0, "width": 254.0 },
+                "HSS 304.8x304.8x19": { "mass": 164.0, "height": 305.0, "width": 305.0 },
+                "HSS 304.8x304.8x15.9": { "mass": 139.0, "height": 305.0, "width": 305.0 },
+                "HSS 304.8x304.8x12.7": { "mass": 113.0, "height": 305.0, "width": 305.0 },
+                "HSS 304.8x304.8x9.5": { "mass": 86.3, "height": 305.0, "width": 305.0 },
+                "HSS 304.8x304.8x7.9": { "mass": 72.6, "height": 305.0, "width": 305.0 },
+                "HSS 304.8x304.8x6.4": { "mass": 58.6, "height": 305.0, "width": 305.0 },
+                "HSS 304.8x304.8x4.8": { "mass": 44.4, "height": 305.0, "width": 305.0 },
+                "HSS 304.8x254x12.7": { "mass": 103.0, "height": 305.0, "width": 254.0 },
+                "HSS 304.8x254x9.5": { "mass": 78.8, "height": 305.0, "width": 254.0 },
+                "HSS 304.8x254x7.9": { "mass": 66.4, "height": 305.0, "width": 254.0 },
+                "HSS 304.8x254x6.4": { "mass": 53.6, "height": 305.0, "width": 254.0 },
+                "HSS 304.8x203.2x15.9": { "mass": 113.0, "height": 305.0, "width": 203.0 },
+                "HSS 304.8x203.2x12.7": { "mass": 92.7, "height": 305.0, "width": 203.0 },
+                "HSS 304.8x203.2x9.5": { "mass": 71.2, "height": 305.0, "width": 203.0 },
+                "HSS 304.8x203.2x7.9": { "mass": 60.1, "height": 305.0, "width": 203.0 },
+                "HSS 304.8x203.2x6.4": { "mass": 48.5, "height": 305.0, "width": 203.0 },
+                "HSS 304.8x203.2x4.8": { "mass": 36.9, "height": 305.0, "width": 203.0 },
+                "HSS 254x254x19": { "mass": 133.0, "height": 254.0, "width": 254.0 },
+                "HSS 254x254x15.9": { "mass": 113.0, "height": 254.0, "width": 254.0 },
+                "HSS 254x254x12.7": { "mass": 92.7, "height": 254.0, "width": 254.0 },
+                "HSS 254x254x9.5": { "mass": 71.2, "height": 254.0, "width": 254.0 },
+                "HSS 254x254x7.9": { "mass": 60.0, "height": 254.0, "width": 254.0 },
+                "HSS 254x254x6.4": { "mass": 48.5, "height": 254.0, "width": 254.0 },
+                "HSS 254x254x4.8": { "mass": 36.8, "height": 254.0, "width": 254.0 },
+                "HSS 254x203.2x15.9": { "mass": 101.0, "height": 254.0, "width": 203.0 },
+                "HSS 254x203.2x12.7": { "mass": 82.6, "height": 254.0, "width": 203.0 },
+                "HSS 254x203.2x9.5": { "mass": 63.6, "height": 254.0, "width": 203.0 },
+                "HSS 254x203.2x7.9": { "mass": 53.7, "height": 254.0, "width": 203.0 },
+                "HSS 254x203.2x6.4": { "mass": 43.4, "height": 254.0, "width": 203.0 },
+                "HSS 254x203.2x4.8": { "mass": 33.1, "height": 254.0, "width": 203.0 },
+                "HSS 228.6x228.6x15.9": { "mass": 101.0, "height": 229.0, "width": 229.0 },
+                "HSS 228.6x228.6x12.7": { "mass": 82.6, "height": 229.0, "width": 229.0 },
+                "HSS 228.6x228.6x9.5": { "mass": 63.6, "height": 229.0, "width": 229.0 },
+                "HSS 228.6x228.6x7.9": { "mass": 53.6, "height": 229.0, "width": 229.0 },
+                "HSS 228.6x228.6x6.4": { "mass": 43.4, "height": 229.0, "width": 229.0 },
+                "HSS 228.6x228.6x74.8": { "mass": 33.0, "height": 229.0, "width": 229.0 },
+                "HSS 228.6x228.6x3.2": { "mass": 22.3, "height": 229.0, "width": 229.0 },
+                "HSS 228.6x177.8x15.9": { "mass": 88.0, "height": 229.0, "width": 178.0 },
+                "HSS 228.6x177.8x12.7": { "mass": 72.5, "height": 229.0, "width": 178.0 },
+                "HSS 228.6x177.8x9.5": { "mass": 56.0, "height": 229.0, "width": 178.0 },
+                "HSS 228.6x177.8x7.9": { "mass": 47.4, "height": 229.0, "width": 178.0 },
+                "HSS 228.6x177.8x6.4": { "mass": 38.4, "height": 229.0, "width": 178.0 },
+                "HSS 228.6x177.8x4.8": { "mass": 29.3, "height": 229.0, "width": 178.0 },
+                "HSS 203.2x203.2x15.9": { "mass": 88.0, "height": 203.0, "width": 203.0 },
+                "HSS 203.2x203.2x12.7": { "mass": 72.5, "height": 203.0, "width": 203.0 },
+                "HSS 203.2x203.2x9.5": { "mass": 56.0, "height": 203.0, "width": 203.0 },
+                "HSS 203.2x203.2x7.9": { "mass": 47.3, "height": 203.0, "width": 203.0 },
+                "HSS 203.2x203.2x6.4": { "mass": 38.4, "height": 203.0, "width": 203.0 },
+                "HSS 203.2x203.2x4.8": { "mass": 29.2, "height": 203.0, "width": 203.0 },
+                "HSS 203.2x203.2x3.2": { "mass": 19.7, "height": 203.0, "width": 203.0 },
+                "HSS 203.2x152.4x15.9": { "mass": 75.3, "height": 203.0, "width": 152.0 },
+                "HSS 203.2x152.4x12.7": { "mass": 62.4, "height": 203.0, "width": 152.0 },
+                "HSS 203.2x152.4x9.5": { "mass": 48.4, "height": 203.0, "width": 152.0 },
+                "HSS 203.2x152.4x7.9": { "mass": 41.0, "height": 203.0, "width": 152.0 },
+                "HSS 203.2x152.4x6.4": { "mass": 33.3, "height": 203.0, "width": 152.0 },
+                "HSS 203.2x152.4x4.8": { "mass": 25.4, "height": 203.0, "width": 152.0 },
+                "HSS 177.8x177.8x15.9": { "mass": 75.3, "height": 178.0, "width": 178.0 },
+                "HSS 177.8x177.8x12.7": { "mass": 62.4, "height": 178.0, "width": 178.0 },
+                "HSS 177.8x177.8x9.5": { "mass": 48.4, "height": 178.0, "width": 178.0 },
+                "HSS 177.8x177.8x7.9": { "mass": 41.0, "height": 178.0, "width": 178.0 },
+                "HSS 177.8x177.8x6.4": { "mass": 33.3, "height": 178.0, "width": 178.0 },
+                "HSS 177.8x177.8x4.8": { "mass": 25.4, "height": 178.0, "width": 178.0 },
+                "HSS 177.8x177.8x3.2": { "mass": 17.2, "height": 178.0, "width": 178.0 },
+                "HSS 177.8x127x12.7": { "mass": 52.2, "height": 178.0, "width": 127.0 },
+                "HSS 177.8x127x9.5": { "mass": 40.8, "height": 178.0, "width": 127.0 },
+                "HSS 177.8x127x7.9": { "mass": 34.7, "height": 178.0, "width": 127.0 },
+                "HSS 177.8x127x6.4": { "mass": 28.3, "height": 178.0, "width": 127.0 },
+                "HSS 177.8x127x4.8": { "mass": 21.6, "height": 178.0, "width": 127.0 },
+                "HSS 177.8x127x3.2": { "mass": 14.7, "height": 178.0, "width": 127.0 },
+                "HSS 152.4x152.4x15.9": { "mass": 62.6, "height": 152.0, "width": 152.0 },
+                "HSS 152.4x152.4x12.7": { "mass": 52.2, "height": 152.0, "width": 152.0 },
+                "HSS 152.4x152.4x9.5": { "mass": 40.8, "height": 152.0, "width": 152.0 },
+                "HSS 152.4x152.4x7.9": { "mass": 34.6, "height": 152.0, "width": 152.0 },
+                "HSS 152.4x152.4x6.4": { "mass": 28.3, "height": 152.0, "width": 152.0 },
+                "HSS 152.4x152.4x4.8": { "mass": 21.6, "height": 152.0, "width": 152.0 },
+                "HSS 152.4x152.4x3.2": { "mass": 14.7, "height": 152.0, "width": 152.0 },
+                "HSS 152.4x127x12.7": { "mass": 47.2, "height": 152.0, "width": 127.0 },
+                "HSS 152.4x127x9.5": { "mass": 37.0, "height": 152.0, "width": 127.0 },
+                "HSS 152.4x127x7.9": { "mass": 31.5, "height": 152.0, "width": 127.0 },
+                "HSS 152.4x127x6.4": { "mass": 25.7, "height": 152.0, "width": 127.0 },
+                "HSS 152.4x127x4.8": { "mass": 19.7, "height": 152.0, "width": 127.0 },
+                "HSS 152.4x127x3.2": { "mass": 13.4, "height": 152.0, "width": 127.0 },
+                "HSS 152.4x101.6x12.7": { "mass": 42.1, "height": 152.0, "width": 102.0 },
+                "HSS 152.4x101.6x9.5": { "mass": 33.2, "height": 152.0, "width": 102.0 },
+                "HSS 152.4x101.6x7.9": { "mass": 28.4, "height": 152.0, "width": 102.0 },
+                "HSS 152.4x101.6x6.4": { "mass": 23.2, "height": 152.0, "width": 102.0 },
+                "HSS 152.4x101.6x4.8": { "mass": 17.8, "height": 152.0, "width": 102.0 },
+                "HSS 152.4x101.6x3.2": { "mass": 12.1, "height": 152.0, "width": 102.0 },
+                "HSS 139.7x139.7x9.5": { "mass": 37.0, "height": 140.0, "width": 140.0 },
+                "HSS 139.7x139.7x7.9": { "mass": 31.5, "height": 140.0, "width": 140.0 },
+                "HSS 139.7x139.7x6.4": { "mass": 25.7, "height": 140.0, "width": 140.0 },
+                "HSS 139.7x139.7x4.8": { "mass": 19.7, "height": 140.0, "width": 140.0 },
+                "HSS 139.7x139.7x3.2": { "mass": 13.4, "height": 140.0, "width": 140.0 },
+                "HSS 127x127x12.7": { "mass": 42.1, "height": 127.0, "width": 127.0 },
+                "HSS 127x127x9.5": { "mass": 33.2, "height": 127.0, "width": 127.0 },
+                "HSS 127x127x7.9": { "mass": 28.3, "height": 127.0, "width": 127.0 },
+                "HSS 127x127x6.4": { "mass": 23.2, "height": 127.0, "width": 127.0 },
+                "HSS 127x127x4.8": { "mass": 17.8, "height": 127.0, "width": 127.0 },
+                "HSS 127x127x3.2": { "mass": 12.1, "height": 127.0, "width": 127.0 },
+                "HSS 127x101.6x12.7": { "mass": 37.1, "height": 127.0, "width": 102.0 },
+                "HSS 127x101.6x9.5": { "mass": 29.4, "height": 127.0, "width": 102.0 },
+                "HSS 127x101.6x7.9": { "mass": 25.2, "height": 127.0, "width": 102.0 },
+                "HSS 127x101.6x6.4": { "mass": 20.7, "height": 127.0, "width": 102.0 },
+                "HSS 127x101.6x4.8": { "mass": 15.9, "height": 127.0, "width": 102.0 },
+                "HSS 127x101.6x3.2": { "mass": 10.9, "height": 127.0, "width": 102.0 },
+                "HSS 114.3x114.3x12.7": { "mass": 37.1, "height": 114.0, "width": 114.0 },
+                "HSS 114.3x114.3x9.5": { "mass": 29.4, "height": 114.0, "width": 114.0 },
+                "HSS 114.3x114.3x7.9": { "mass": 25.2, "height": 114.0, "width": 114.0 },
+                "HSS 114.3x114.3x6.4": { "mass": 20.7, "height": 114.0, "width": 114.0 },
+                "HSS 114.3x114.3x4.8": { "mass": 15.9, "height": 114.0, "width": 114.0 },
+                "HSS 114.3x114.3x3.2": { "mass": 10.9, "height": 114.0, "width": 114.0 },
+                "HSS 101.6x101.6x12.7": { "mass": 32.0, "height": 102.0, "width": 102.0 },
+                "HSS 101.6x101.6x9.5": { "mass": 25.6, "height": 102.0, "width": 102.0 },
+                "HSS 101.6x101.6x7.9": { "mass": 22.0, "height": 102.0, "width": 102.0 },
+                "HSS 101.6x101.6x6.4": { "mass": 18.1, "height": 102.0, "width": 102.0 },
+                "HSS 101.6x101.6x4.8": { "mass": 14.0, "height": 102.0, "width": 102.0 },
+                "HSS 101.6x101.6x3.2": { "mass": 9.59, "height": 102.0, "width": 102.0 },
+                "HSS 101.6x76.2x9.5": { "mass": 21.8, "height": 102.0, "width": 76.2 },
+                "HSS 101.6x76.2x7.9": { "mass": 18.8, "height": 102.0, "width": 76.2 },
+                "HSS 101.6x76.2x6.4": { "mass": 15.6, "height": 102.0, "width": 76.2 },
+                "HSS 101.6x76.2x4.8": { "mass": 12.1, "height": 102.0, "width": 76.2 },
+                "HSS 101.6x76.2x3.2": { "mass": 8.33, "height": 102.0, "width": 76.2 },
+                "HSS 88.9x88.9x9.5": { "mass": 21.8, "height": 88.9, "width": 88.9 },
+                "HSS 88.9x88.9x7.9": { "mass": 18.8, "height": 88.9, "width": 88.9 },
+                "HSS 88.9x88.9x6.4": { "mass": 15.6, "height": 88.9, "width": 88.9 },
+                "HSS 88.9x88.9x4.8": { "mass": 12.1, "height": 88.9, "width": 88.9 },
+                "HSS 88.9x88.9x3.2": { "mass": 6.71, "height": 88.9, "width": 88.9 },
+                "HSS 76.2x76.2x9.5": { "mass": 18.0, "height": 76.2, "width": 76.2 },
+                "HSS 76.2x76.2x7.9": { "mass": 15.7, "height": 76.2, "width": 76.2 },
+                "HSS 76.2x76.2x6.4": { "mass": 13.1, "height": 76.2, "width": 76.2 },
+                "HSS 76.2x76.2x4.8": { "mass": 10.2, "height": 76.2, "width": 76.2 },
+                "HSS 76.2x76.2x3.2": { "mass": 7.06, "height": 76.2, "width": 76.2 }
+        },
+"HSS Circular Sections": {
+                "HSS 508x12.7": { "mass": 155.0, "height": 0.0, "width": 508.0 },
+                "HSS 508x9.5": { "mass": 117.0, "height": 0.0, "width": 508.0 },
+                "HSS 457.2x12.7": { "mass": 139.0, "height": 0.0, "width": 457.0 },
+                "HSS 457.2x9.5": { "mass": 105.0, "height": 0.0, "width": 457.0 },
+                "HSS 406.4x15.9": { "mass": 153.0, "height": 0.0, "width": 406.0 },
+                "HSS 406.4x12.7": { "mass": 123.0, "height": 0.0, "width": 406.0 },
+                "HSS 406.4x11.1": { "mass": 108.0, "height": 0.0, "width": 406.0 },
+                "HSS 406.4x9.5": { "mass": 93.2, "height": 0.0, "width": 406.0 },
+                "HSS 406.4x7.9": { "mass": 77.9, "height": 0.0, "width": 406.0 },
+                "HSS 406.4x6.4": { "mass": 62.6, "height": 0.0, "width": 406.0 },
+                "HSS 355.6x15.9": { "mass": 133.0, "height": 0.0, "width": 356.0 },
+                "HSS 355.6x12.7": { "mass": 107.0, "height": 0.0, "width": 356.0 },
+                "HSS 355.6x9.5": { "mass": 81.3, "height": 0.0, "width": 356.0 },
+                "HSS 355.6x7.9": { "mass": 67.9, "height": 0.0, "width": 356.0 },
+                "HSS 355.6x6.4": { "mass": 54.7, "height": 0.0, "width": 356.0 },
+                "HSS 323.9x12.7": { "mass": 97.4, "height": 0.0, "width": 324.0 },
+                "HSS 323.9x9.5": { "mass": 73.8, "height": 0.0, "width": 324.0 },
+                "HSS 323.9x6.4": { "mass": 49.7, "height": 0.0, "width": 324.0 },
+                "HSS 273.1x12.7": { "mass": 81.5, "height": 0.0, "width": 273.0 },
+                "HSS 273.1x9.5": { "mass": 61.9, "height": 0.0, "width": 273.0 },
+                "HSS 273.1x6.4": { "mass": 41.8, "height": 0.0, "width": 273.0 },
+                "HSS 254x15.9": { "mass": 93.2, "height": 0.0, "width": 254.0 },
+                "HSS 254x12.7": { "mass": 75.6, "height": 0.0, "width": 254.0 },
+                "HSS 254x9.5": { "mass": 57.4, "height": 0.0, "width": 254.0 },
+                "HSS 254x7.9": { "mass": 48.1, "height": 0.0, "width": 254.0 },
+                "HSS 254x6.4": { "mass": 38.8, "height": 0.0, "width": 254.0 },
+                "HSS 254x4.8": { "mass": 29.3, "height": 0.0, "width": 254.0 },
+                "HSS 244.5x12.7": { "mass": 72.6, "height": 0.0, "width": 244.0 },
+                "HSS 244.5x9.5": { "mass": 55.2, "height": 0.0, "width": 244.0 },
+                "HSS 244.5x7.9": { "mass": 46.2, "height": 0.0, "width": 244.0 },
+                "HSS 244.5x6.4": { "mass": 37.3, "height": 0.0, "width": 244.0 },
+                "HSS 244.5x4.8": { "mass": 28.2, "height": 0.0, "width": 244.0 },
+                "HSS 219.1x15.9": { "mass": 79.5, "height": 0.0, "width": 219.0 },
+                "HSS 219.1x12.7": { "mass": 64.6, "height": 0.0, "width": 219.0 },
+                "HSS 219.1x9.5": { "mass": 49.2, "height": 0.0, "width": 219.0 },
+                "HSS 219.1x8.2": { "mass": 42.5, "height": 0.0, "width": 219.0 },
+                "HSS 219.1x6.4": { "mass": 33.3, "height": 0.0, "width": 219.0 },
+                "HSS 219.1x4.8": { "mass": 25.2, "height": 0.0, "width": 219.0 },
+                "HSS 193.7x9.5": { "mass": 43.2, "height": 0.0, "width": 194.0 },
+                "HSS 193.7x8.3": { "mass": 38.1, "height": 0.0, "width": 194.0 },
+                "HSS 190.5x12.7": { "mass": 55.7, "height": 0.0, "width": 191.0 },
+                "HSS 190.5x9.5": { "mass": 42.5, "height": 0.0, "width": 191.0 },
+                "HSS 190.5x7.9": { "mass": 35.7, "height": 0.0, "width": 191.0 },
+                "HSS 190.5x6.4": { "mass": 28.8, "height": 0.0, "width": 191.0 },
+                "HSS 190.5x4.8": { "mass": 21.9, "height": 0.0, "width": 191.0 },
+                "HSS 177.8x12.7": { "mass": 51.7, "height": 0.0, "width": 178.0 },
+                "HSS 177.8x9.5": { "mass": 39.5, "height": 0.0, "width": 178.0 },
+                "HSS 177.8x7.9": { "mass": 33.2, "height": 0.0, "width": 178.0 },
+                "HSS 177.8x6.4": { "mass": 26.8, "height": 0.0, "width": 178.0 },
+                "HSS 177.8x4.8": { "mass": 20.4, "height": 0.0, "width": 178.0 },
+                "HSS 177.8x3.2": { "mass": 13.7, "height": 0.0, "width": 178.0 },
+                "HSS 174.6x12.7": { "mass": 50.7, "height": 0.0, "width": 175.0 },
+                "HSS 174.6x9.5": { "mass": 38.8, "height": 0.0, "width": 175.0 },
+                "HSS 174.6x7.9": { "mass": 32.6, "height": 0.0, "width": 175.0 },
+                "HSS 174.6x6.4": { "mass": 26.3, "height": 0.0, "width": 175.0 },
+                "HSS 174.6x4.8": { "mass": 20.0, "height": 0.0, "width": 175.0 },
+                "HSS 168.3x12.7": { "mass": 48.7, "height": 0.0, "width": 168.0 },
+                "HSS 168.3x11": { "mass": 42.6, "height": 0.0, "width": 168.0 },
+                "HSS 168.3x9.5": { "mass": 37.3, "height": 0.0, "width": 168.0 },
+                "HSS 168.3x7.9": { "mass": 31.3, "height": 0.0, "width": 168.0 },
+                "HSS 168.3x7.1": { "mass": 28.3, "height": 0.0, "width": 168.0 },
+                "HSS 168.3x6.4": { "mass": 25.4, "height": 0.0, "width": 168.0 },
+                "HSS 168.3x4.8": { "mass": 19.2, "height": 0.0, "width": 168.0 },
+                "HSS 168.3x3.2": { "mass": 12.9, "height": 0.0, "width": 168.0 },
+                "HSS 152.4x12.7": { "mass": 43.7, "height": 0.0, "width": 152.0 },
+                "HSS 152.4x9.5": { "mass": 33.6, "height": 0.0, "width": 152.0 },
+                "HSS 152.4x7.9": { "mass": 28.2, "height": 0.0, "width": 152.0 },
+                "HSS 152.4x7.1": { "mass": 25.5, "height": 0.0, "width": 152.0 },
+                "HSS 152.4x6.4": { "mass": 22.9, "height": 0.0, "width": 152.0 },
+                "HSS 152.4x4.8": { "mass": 17.4, "height": 0.0, "width": 152.0 },
+                "HSS 152.4x3.2": { "mass": 11.7, "height": 0.0, "width": 152.0 },
+                "HSS 141.3x12.7": { "mass": 40.3, "height": 0.0, "width": 141.0 },
+                "HSS 141.3x9.5": { "mass": 30.9, "height": 0.0, "width": 141.0 },
+                "HSS 141.3x6.6": { "mass": 21.8, "height": 0.0, "width": 141.0 },
+                "HSS 141.3x4.8": { "mass": 16.1, "height": 0.0, "width": 141.0 },
+                "HSS 141.3x3.4": { "mass": 11.6, "height": 0.0, "width": 141.0 },
+                "HSS 139.7x12.7": { "mass": 39.8, "height": 0.0, "width": 140.0 },
+                "HSS 139.7x9.5": { "mass": 30.6, "height": 0.0, "width": 140.0 },
+                "HSS 139.7x6.6": { "mass": 21.5, "height": 0.0, "width": 140.0 },
+                "HSS 127x12.7": { "mass": 35.8, "height": 0.0, "width": 127.0 },
+                "HSS 127x9.5": { "mass": 27.6, "height": 0.0, "width": 127.0 },
+                "HSS 127x7.9": { "mass": 23.3, "height": 0.0, "width": 127.0 },
+                "HSS 127x6.6": { "mass": 19.5, "height": 0.0, "width": 127.0 },
+                "HSS 127x6.4": { "mass": 18.9, "height": 0.0, "width": 127.0 },
+                "HSS 127x4.8": { "mass": 14.4, "height": 0.0, "width": 127.0 },
+                "HSS 127x3.2": { "mass": 9.69, "height": 0.0, "width": 127.0 },
+                "HSS 114.3x9.5": { "mass": 24.6, "height": 0.0, "width": 114.0 },
+                "HSS 114.3x8.6": { "mass": 22.3, "height": 0.0, "width": 114.0 },
+                "HSS 114.3x6": { "mass": 16.1, "height": 0.0, "width": 114.0 },
+                "HSS 114.3x4.8": { "mass": 12.9, "height": 0.0, "width": 114.0 },
+                "HSS 114.3x3.2": { "mass": 8.7, "height": 0.0, "width": 114.0 },
+                "HSS 101.6x8": { "mass": 18.4, "height": 0.0, "width": 102.0 },
+                "HSS 101.6x6.4": { "mass": 14.9, "height": 0.0, "width": 102.0 },
+                "HSS 101.6x6": { "mass": 14.2, "height": 0.0, "width": 102.0 },
+                "HSS 101.6x5.7": { "mass": 13.6, "height": 0.0, "width": 102.0 },
+                "HSS 101.6x5.6": { "mass": 13.2, "height": 0.0, "width": 102.0 },
+                "HSS 101.6x4.8": { "mass": 11.4, "height": 0.0, "width": 102.0 },
+                "HSS 101.6x3.2": { "mass": 7.7, "height": 0.0, "width": 102.0 },
+                "HSS 88.9x8": { "mass": 15.9, "height": 0.0, "width": 88.9 },
+                "HSS 88.9x7.6": { "mass": 15.3, "height": 0.0, "width": 88.9 },
+                "HSS 88.9x6.4": { "mass": 12.9, "height": 0.0, "width": 88.9 },
+                "HSS 88.9x5.5": { "mass": 11.3, "height": 0.0, "width": 88.9 },
+                "HSS 88.9x5.2": { "mass": 10.6, "height": 0.0, "width": 88.9 },
+                "HSS 88.9x4.8": { "mass": 9.9, "height": 0.0, "width": 88.9 },
+                "HSS 88.9x3.2": { "mass": 6.71, "height": 0.0, "width": 88.9 },
+                "HSS 76.2x6.4": { "mass": 10.9, "height": 0.0, "width": 76.2 },
+                "HSS 76.2x5.5": { "mass": 9.57, "height": 0.0, "width": 76.2 },
+                "HSS 76.2x5.2": { "mass": 9.03, "height": 0.0, "width": 76.2 },
+                "HSS 76.2x4.8": { "mass": 8.41, "height": 0.0, "width": 76.2 },
+                "HSS 76.2x3.9": { "mass": 6.89, "height": 0.0, "width": 76.2 },
+                "HSS 76.2x3.4": { "mass": 6.11, "height": 0.0, "width": 76.2 },
+                "HSS 76.2x3.2": { "mass": 5.72, "height": 0.0, "width": 76.2 },
+                "HSS 73x6.4": { "mass": 10.4, "height": 0.0, "width": 73.0 },
+                "HSS 73x5.2": { "mass": 8.63, "height": 0.0, "width": 73.0 },
+                "HSS 73x4.8": { "mass": 8.04, "height": 0.0, "width": 73.0 },
+                "HSS 73x3.2": { "mass": 5.47, "height": 0.0, "width": 73.0 },
+                "HSS 63.5x6.4": { "mass": 8.95, "height": 0.0, "width": 63.5 },
+                "HSS 63.5x4.8": { "mass": 6.91, "height": 0.0, "width": 63.5 },
+                "HSS 63.5x3.2": { "mass": 4.72, "height": 0.0, "width": 63.5 },
+                "HSS 60.3x6.4": { "mass": 8.45, "height": 0.0, "width": 60.3 },
+                "HSS 60.3x5.5": { "mass": 7.48, "height": 0.0, "width": 60.3 },
+                "HSS 60.3x4.8": { "mass": 6.54, "height": 0.0, "width": 60.3 },
+                "HSS 60.3x3.9": { "mass": 5.44, "height": 0.0, "width": 60.3 },
+                "HSS 60.3x3.2": { "mass": 4.47, "height": 0.0, "width": 60.3 },
+                "HSS 48.3x4.8": { "mass": 5.12, "height": 0.0, "width": 48.3 },
+                "HSS 48.3x3.7": { "mass": 4.05, "height": 0.0, "width": 48.3 },
+                "HSS 48.3x3.0": { "mass": 3.4, "height": 0.0, "width": 48.3 },
+                "HSS 42.2x3.6": { "mass": 3.38, "height": 0.0, "width": 42.2 }
+        }
+        };
+
+        const shapeToSheet = {
+            "Wide Flange Column": "W Sections",
+            "HSS Rectangular": "HSS Sections",
+            "HSS Round": "HSS Circular Sections"
+        };
+
+        function populateSectionSizes() {
+            const shape = document.getElementById('mdShape').value;
+            const sheetKey = shapeToSheet[shape];
+            const sizeSelect = document.getElementById('mdSectionSize');
+            
+            sizeSelect.innerHTML = '<option value="">-- Select Section Size --</option>';
+            if (sheetKey && steelDatabase[sheetKey]) {
+                const sections = steelDatabase[sheetKey];
+                for (const designation of Object.keys(sections)) {
+                    const opt = document.createElement('option');
+                    opt.value = designation;
+                    opt.innerText = designation;
+                    sizeSelect.appendChild(opt);
+                }
+            }
+        }
+
+        function onShapeChange() {
+            populateSectionSizes();
+            document.getElementById('mdSectionSize').value = "";
+            document.getElementById('mdMass').value = 0;
+            document.getElementById('mdDimH').value = 0;
+            document.getElementById('mdDimB').value = 0;
+            calculateMD();
+        }
+
+        function onSectionSizeSelect() {
+            const shape = document.getElementById('mdShape').value;
+            const sheetKey = shapeToSheet[shape];
+            const designation = document.getElementById('mdSectionSize').value;
+
+            if (sheetKey && designation && steelDatabase[sheetKey][designation]) {
+                const data = steelDatabase[sheetKey][designation];
+                document.getElementById('mdMass').value = data.mass;
+                document.getElementById('mdDimH').value = data.height;
+                document.getElementById('mdDimB').value = data.width;
+                calculateMD();
+            }
+        }
+
+        // --- UNIVERSAL COPY UTILITIES ---
+        function showToast() {
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        function extractNumeric(text) {
+            let clean = text.replace(/,/g, '').replace(/\s*(mm|m|sq ft|sq m|in|ft|kg\/m²|Landings|Landing|Required|%)/gi, '').trim();
+            return clean;
+        }
+
+        function copyValue(element) {
+            let val = element.value || element.innerText;
+            let numericVal = extractNumeric(val);
+            navigator.clipboard.writeText(numericVal).then(() => {
+                showToast();
+            });
+        }
+
+        function copyBoxValue(boxElement, spanId) {
+            const span = document.getElementById(spanId);
+            let val = span ? span.innerText : boxElement.innerText;
+            let numericVal = extractNumeric(val);
+            navigator.clipboard.writeText(numericVal).then(() => {
+                showToast();
+            });
+        }
+
+        // --- CONVERTER ENGINE (LENGTH) ---
+        function parseInputToMm(valStr, unit) {
+            valStr = valStr.toString().trim();
+            if (!valStr || valStr === "0") return 0;
+
+            if (unit === 'mm') return parseFloat(valStr) || 0;
+            if (unit === 'cm') return (parseFloat(valStr) || 0) * 10;
+            if (unit === 'm') return (parseFloat(valStr) || 0) * 1000;
+            if (unit === 'in') return (parseFloat(valStr) || 0) * 25.4;
+            if (unit === 'ft') return (parseFloat(valStr) || 0) * 304.8;
+
+            if (unit === 'ft_in') {
+                let clean = valStr.toLowerCase().replace(/"/g, '').replace(/'/g, ' ').replace(/ft/g, ' ').replace(/in/g, ' ');
+                let parts = clean.trim().split(/[\s+-]+/);
+                let feet = parseFloat(parts[0]) || 0;
+                let inches = parts[1] ? parseFloat(parts[1]) || 0 : 0;
+                return (feet * 304.8) + (inches * 25.4);
+            }
+            return 0;
+        }
+
+        function formatNumber(num) {
+            return parseFloat(num.toFixed(6)).toString();
+        }
+
+        function formatMmToFtInFracOnly(mm) {
+            if (mm === 0) return "0'-0\"";
+            let totalInches = mm / 25.4;
+            let feet = Math.floor(totalInches / 12);
+            let remInches = totalInches % 12;
+            let wholeInches = Math.floor(remInches);
+            let fractionalInches = remInches - wholeInches;
+            
+            let eighths = Math.round(fractionalInches * 8);
+            if (eighths === 8) {
+                wholeInches += 1;
+                eighths = 0;
+            }
+            if (wholeInches === 12) {
+                feet += 1;
+                wholeInches = 0;
+            }
+
+            let eighthsStr = "";
+            if (eighths === 1) eighthsStr = " 1/8";
+            else if (eighths === 2) eighthsStr = " 1/4";
+            else if (eighths === 3) eighthsStr = " 3/8";
+            else if (eighths === 4) eighthsStr = " 1/2";
+            else if (eighths === 5) eighthsStr = " 5/8";
+            else if (eighths === 6) eighthsStr = " 3/4";
+            else if (eighths === 7) eighthsStr = " 7/8";
+
+            let fractionalPartStr = `${wholeInches}${eighthsStr}`;
+            if (wholeInches === 0 && eighthsStr === "") {
+                fractionalPartStr = "0";
+            }
+
+            return `${feet}'-${fractionalPartStr}\"`;
+        }
+
+        function formatMmToFtInDecOnly(mm) {
+            if (mm === 0) return "0'-0.00\"";
+            let totalInches = mm / 25.4;
+            let feet = Math.floor(totalInches / 12);
+            let remInches = totalInches % 12;
+            return `${feet}'-${remInches.toFixed(2)}"`;
+        }
+
+        function formatMmFromTarget(mm, targetUnit) {
+            if (mm === 0) return targetUnit === 'ft_in' ? "0'-0\"" : "0 " + targetUnit;
+            if (targetUnit === 'mm') return formatNumber(mm) + ' mm';
+            if (targetUnit === 'cm') return formatNumber(mm / 10) + ' cm';
+            if (targetUnit === 'm') return formatNumber(mm / 1000) + ' m';
+            if (targetUnit === 'in') return formatNumber(mm / 25.4) + ' in';
+            if (targetUnit === 'ft') return formatNumber(mm / 304.8) + ' ft';
+            return '';
+        }
+
+        function runConversion() {
+            const inputValStr = document.getElementById('inputValue').value;
+            const inputUnit = document.getElementById('inputUnit').value;
+            const outputUnit = document.getElementById('outputUnit').value;
+
+            const mmValue = parseInputToMm(inputValStr, inputUnit);
+            
+            const standardWrapper = document.getElementById('standardOutputWrapper');
+            const ftInWrapper = document.getElementById('ftInOutputWrapper');
+
+            if (outputUnit === 'ft_in') {
+                standardWrapper.classList.add('hidden');
+                ftInWrapper.classList.remove('hidden');
+
+                document.getElementById('outputValFrac').value = formatMmToFtInFracOnly(mmValue);
+                document.getElementById('outputValDec').value = formatMmToFtInDecOnly(mmValue);
+            } else {
+                standardWrapper.classList.remove('hidden');
+                ftInWrapper.classList.add('hidden');
+
+                const result = formatMmFromTarget(mmValue, outputUnit);
+                document.getElementById('outputValue').value = result;
+            }
+        }
+
+        // --- CONVERTER ENGINE (AREA) ---
+        function parseAreaToSqMeters(val, unit) {
+            val = parseFloat(val) || 0;
+            if (val <= 0) return 0;
+
+            switch (unit) {
+                case 'sq_mm': return val / 1_000_000;
+                case 'sq_cm': return val / 10_000;
+                case 'sq_m': return val;
+                case 'sq_in': return val * 0.00064516;
+                case 'sq_ft': return val * 0.092903;
+                case 'acres': return val * 4046.856422;
+                case 'hectares': return val * 10_000;
+                default: return val;
+            }
+        }
+
+        function formatAreaFromSqMeters(sqMeters, targetUnit) {
+            if (sqMeters === 0) return "0";
+            let val = 0;
+
+            switch (targetUnit) {
+                case 'sq_mm': val = sqMeters * 1_000_000; break;
+                case 'sq_cm': val = sqMeters * 10_000; break;
+                case 'sq_m': val = sqMeters; break;
+                case 'sq_in': val = sqMeters / 0.00064516; break;
+                case 'sq_ft': val = sqMeters / 0.092903; break;
+                case 'acres': val = sqMeters / 4046.856422; break;
+                case 'hectares': val = sqMeters / 10_000; break;
+                default: val = sqMeters; break;
+            }
+            return parseFloat(val.toFixed(6)).toString();
+        }
+
+        function runAreaConversion() {
+            const val = document.getElementById('inputAreaValue').value;
+            const inputUnit = document.getElementById('inputAreaUnit').value;
+            const outputUnit = document.getElementById('outputAreaUnit').value;
+
+            const sqMeters = parseAreaToSqMeters(val, inputUnit);
+            const result = formatAreaFromSqMeters(sqMeters, outputUnit);
+
+            document.getElementById('outputAreaValue').value = result;
+        }
+
+        // --- SPACE CALCULATOR ENGINE ---
+        function calculateSpace() {
+            const unitType = document.getElementById('spaceUnitType').value;
+            const lengthStr = document.getElementById('spaceLength').value;
+            const widthStr = document.getElementById('spaceWidth').value;
+
+            const lengthMm = parseInputToMm(lengthStr, unitType);
+            const widthMm = parseInputToMm(widthStr, unitType);
+
+            const areaSqM = (lengthMm / 1000) * (widthMm / 1000);
+            const areaSqFt = areaSqM * 10.76391042;
+
+            document.getElementById('resSpaceSqFt').innerText = `${parseFloat(areaSqFt.toFixed(2)).toLocaleString()} sq ft`;
+            document.getElementById('resSpaceSqM').innerText = `${parseFloat(areaSqM.toFixed(2)).toLocaleString()} sq m`;
+        }
+
+        // --- SCALE CONVERTER ENGINE ---
+        function parseFraction(str) {
+            str = str.toString().trim();
+            if (!str) return 0;
+            if (str.includes('/')) {
+                let parts = str.split('/');
+                let num = parseFloat(parts[0]);
+                let den = parseFloat(parts[1]);
+                if (den && den !== 0) return num / den;
+            }
+            return parseFloat(str) || 0;
+        }
+
+        function applyScalePreset() {
+            const preset = document.getElementById('scalePreset').value;
+            const presets = {
+                '3in': { val: '3', label: '3" = 1\'-0"' },
+                '1_5in': { val: '1-1/2', label: '1-1/2" = 1\'-0"' },
+                '1in': { val: '1', label: '1" = 1\'-0"' },
+                '3_4in': { val: '3/4', label: '3/4" = 1\'-0"' },
+                '1_2in': { val: '1/2', label: '1/2" = 1\'-0"' },
+                '3_8in': { val: '3/8', label: '3/8" = 1\'-0"' },
+                '1_4in': { val: '1/4', label: '1/4" = 1\'-0"' },
+                '3_16in': { val: '3/16', label: '3/16" = 1\'-0"' },
+                '1_8in': { val: '1/8', label: '1/8" = 1\'-0"' },
+                '3_32in': { val: '3/32', label: '3/32" = 1\'-0"' },
+                '1_16in': { val: '1/16', label: '1/16" = 1\'-0"' },
+                '1_32in': { val: '1/32', label: '1/32" = 1\'-0"' },
+                '1_64in': { val: '1/64', label: '1/64" = 1\'-0"' }
+            };
+
+            const data = presets[preset];
+            if (data) {
+                document.getElementById('customFractionInput').value = data.val;
+                calculateCustomScale();
+            }
+        }
+
+        function calculateCustomScale() {
+            const rawStr = document.getElementById('customFractionInput').value;
+            const inches = parseFraction(rawStr);
+
+            let scaleFactor = 0;
+            if (inches > 0) {
+                scaleFactor = 12 / inches;
+            }
+
+            let notation = rawStr.includes('/') || rawStr.includes('.') ? `${rawStr}" = 1'-0"` : `${inches}" = 1'-0"`;
+
+            document.getElementById('resScaleNotation').innerText = notation;
+            document.getElementById('resScaleFactor').innerText = scaleFactor > 0 ? parseFloat(scaleFactor.toFixed(4)).toString() : "0";
+        }
+
+        // --- DUAL STAIR CALCULATOR ---
+        function onTotalRiseInput() {
+            const totalRise = parseFloat(document.getElementById('stairTotalRise').value) || 0;
+            if (totalRise > 0) {
+                const minRisers = Math.ceil(totalRise / 180);
+                document.getElementById('stairTargetRisersCount').value = minRisers;
+                document.getElementById('stairRun').value = "280";
+            } else {
+                document.getElementById('stairTargetRisersCount').value = "0";
+                document.getElementById('stairRun').value = "0";
+            }
+            calculateStairs();
+        }
+
+        function calculateStairs() {
+            const totalRise = parseFloat(document.getElementById('stairTotalRise').value) || 0;
+            const targetCountInput = parseInt(document.getElementById('stairTargetRisersCount').value) || 0;
+            const run = parseFloat(document.getElementById('stairRun').value) || 0;
+
+            if (totalRise <= 0) {
+                document.getElementById('optRisers').innerText = "0";
+                document.getElementById('optRise').innerText = "0.0 mm";
+                document.getElementById('optLandings').innerText = "0 Landings";
+                document.getElementById('optLandings').className = "font-mono text-emerald-600 font-bold";
+                
+                document.getElementById('customRisers').innerText = "0";
+                document.getElementById('customRise').innerText = "0.0 mm";
+                document.getElementById('customTotalRun').innerText = "0 mm";
+                
+                const box = document.getElementById('stairComplianceBox');
+                const text = document.getElementById('stairComplianceText');
+                box.className = "p-3 rounded-lg border bg-slate-50 border-slate-200 text-xs transition-colors mt-2";
+                text.className = "font-medium text-slate-500";
+                text.innerText = "Enter floor-to-floor height to begin evaluation.";
+                return;
+            }
+
+            const minRisers = Math.ceil(totalRise / 180);
+            const optimizedRise = totalRise / minRisers;
+            
+            document.getElementById('optRisers').innerText = minRisers;
+            document.getElementById('optRise').innerText = optimizedRise.toFixed(1) + ' mm';
+            document.getElementById('optRun').innerText = '280 mm';
+
+            const maxFlightHeight = 3700;
+            let requiredLandings = 0;
+            if (totalRise > maxFlightHeight) {
+                let flights = Math.ceil(totalRise / maxFlightHeight);
+                requiredLandings = flights - 1;
+            }
+            
+            const landingElem = document.getElementById('optLandings');
+            if (requiredLandings > 0) {
+                landingElem.innerText = requiredLandings + (requiredLandings === 1 ? ' Landing Required' : ' Landings Required');
+                landingElem.className = "font-mono text-amber-600 font-bold";
+            } else {
+                landingElem.innerText = "0 Landings (Single Flight OK)";
+                landingElem.className = "font-mono text-emerald-600 font-bold";
+            }
+
+            let customRisers = targetCountInput > 0 ? targetCountInput : minRisers;
+            if (customRisers < 1) customRisers = 1;
+
+            const actualRise = totalRise / customRisers;
+            const totalRun = (customRisers - 1) * run;
+
+            document.getElementById('customRisers').innerText = customRisers;
+            document.getElementById('customRise').innerText = actualRise.toFixed(1) + ' mm';
+            document.getElementById('customTotalRun').innerText = totalRun.toLocaleString() + ' mm';
+
+            const box = document.getElementById('stairComplianceBox');
+            const text = document.getElementById('stairComplianceText');
+
+            let errors = [];
+            if (actualRise < 125 || actualRise > 180) {
+                errors.push(`Actual Rise (${actualRise.toFixed(1)} mm) exceeds limits (125-180mm).`);
+            }
+            if (run > 0 && (run < 280 || run > 355)) {
+                errors.push(`Tread Run (${run} mm) is outside limits (280-355mm).`);
+            }
+
+            if (errors.length === 0) {
+                box.className = "p-3 rounded-lg border bg-emerald-50 border-emerald-200 text-xs transition-colors mt-2";
+                text.className = "font-medium text-emerald-700";
+                text.innerText = "✓ Custom Layout: Compliant with all specified range limits.";
+            } else {
+                box.className = "p-3 rounded-lg border bg-rose-50 border-rose-200 text-xs transition-colors mt-2";
+                text.className = "font-medium text-rose-700";
+                text.innerHTML = "<strong>Warning:</strong> " + errors.join(" ");
+            }
+        }
+
+        // --- RAMP CALCULATOR ---
+        function onRampRatioInput() {
+            const val = document.getElementById('rampRatio').value;
+            if (val === "") {
+                document.getElementById('rampPercent').value = "";
+            } else {
+                const ratio = parseFloat(val) || 0;
+                if (ratio > 0) {
+                    const percent = (1 / ratio) * 100;
+                    document.getElementById('rampPercent').value = parseFloat(percent.toFixed(4));
+                } else {
+                    document.getElementById('rampPercent').value = 0;
+                }
+            }
+            calculateRampFromRise();
+        }
+
+        function onRampPercentInput() {
+            const val = document.getElementById('rampPercent').value;
+            if (val === "") {
+                document.getElementById('rampRatio').value = "";
+            } else {
+                const percent = parseFloat(val) || 0;
+                if (percent > 0) {
+                    const ratio = 100 / percent;
+                    document.getElementById('rampRatio').value = parseFloat(ratio.toFixed(4));
+                } else {
+                    document.getElementById('rampRatio').value = 0;
+                }
+            }
+            calculateRampFromRise();
+        }
+
+        function calculateRampFromRise() {
+            const rise = parseFloat(document.getElementById('rampRise').value) || 0;
+            const ratioStr = document.getElementById('rampRatio').value;
+            const ratio = ratioStr === "" ? 0 : (parseFloat(ratioStr) || 0);
+
+            const run = rise * ratio;
+            document.getElementById('rampRunResult').innerText = `${run.toLocaleString()} mm (${(run/1000).toFixed(2)} m)`;
+
+            updateRampLandingNotice(ratio, run, 'rampLandingNoticeRise');
+        }
+
+        function calculateSlopeFromDimensions() {
+            const rise = parseFloat(document.getElementById('rampCheckRise').value) || 0;
+            const run = parseFloat(document.getElementById('rampCheckRun').value) || 0;
+            const ratioEl = document.getElementById('resCheckRatio');
+            const percentEl = document.getElementById('resCheckPercent');
+            const noticeEl = document.getElementById('rampCheckNotice');
+
+            if (rise <= 0 || run <= 0) {
+                ratioEl.innerText = "N/A";
+                percentEl.innerText = "0.00%";
+                noticeEl.className = "p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500";
+                noticeEl.innerText = "Enter rise and run to evaluate slope...";
+                return;
+            }
+
+            const ratio = run / rise;
+            const percent = (rise / run) * 100;
+
+            ratioEl.innerText = `1:${ratio.toFixed(2)}`;
+            percentEl.innerText = `${percent.toFixed(2)}%`;
+
+            updateRampLandingNotice(ratio, run, 'rampCheckNotice');
+        }
+
+        function updateRampLandingNotice(ratio, runMm, elementId) {
+            const noticeEl = document.getElementById(elementId);
+            const maxRunWithoutLanding = 9000; // 9 meters max run
+
+            if (ratio === 0 || isNaN(ratio)) {
+                noticeEl.className = "p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500";
+                noticeEl.innerText = "Evaluating ramp compliance...";
+                return;
+            }
+
+            if (ratio < 12) {
+                noticeEl.className = "p-2.5 rounded border border-rose-200 text-xs bg-rose-50 text-rose-700 font-medium";
+                noticeEl.innerText = "⚠ Slope is steeper than 1:12 (Exceeds max accessible ramp slope limits).";
+            } else if (ratio > 20) {
+                noticeEl.className = "p-2.5 rounded border border-slate-200 text-xs bg-slate-100 text-slate-700 font-medium";
+                noticeEl.innerText = "ℹ Slope is shallower than 1:20 (Classified as a walkway/path, not a regulated ramp).";
+            } else {
+                if (runMm <= maxRunWithoutLanding) {
+                    noticeEl.className = "p-2.5 rounded border border-emerald-200 text-xs bg-emerald-50 text-emerald-700 font-medium";
+                    noticeEl.innerText = "✓ Regulated Ramp: Run is within 9m limit (0 intermediate landings required).";
+                } else {
+                    const intermediateLandings = Math.ceil(runMm / maxRunWithoutLanding) - 1;
+                    noticeEl.className = "p-2.5 rounded border border-amber-200 text-xs bg-amber-50 text-amber-800 font-medium";
+                    noticeEl.innerText = `⚠ Regulated Ramp: Run exceeds 9m limit (${intermediateLandings} intermediate landing(s) required).`;
+                }
+            }
+        }
+
+        // --- SPOT ELEVATION & GRADE SLOPE CALCULATOR ---
+        function parseValueToMm(valStr, unit) {
+            valStr = valStr.toString().trim();
+            if (!valStr) return 0;
+            if (unit === 'm') return (parseFloat(valStr) || 0) * 1000;
+            if (unit === 'mm') return parseFloat(valStr) || 0;
+            if (unit === 'ft') return (parseFloat(valStr) || 0) * 304.8;
+            if (unit === 'ft_in') {
+                return parseInputToMm(valStr, 'ft_in');
+            }
+            return 0;
+        }
+
+        let isCalculatingFromSlope = false;
+
+        function calculateSpotElevations() {
+            if (isCalculatingFromSlope) return;
+
+            const globalUnit = document.getElementById('spotGlobalUnit').value;
+            const val1 = document.getElementById('spotElev1').value;
+            const val2 = document.getElementById('spotElev2').value;
+
+            const mm1 = parseValueToMm(val1, globalUnit);
+            const mm2 = parseValueToMm(val2, globalUnit);
+
+            const diffMm = Math.abs(mm1 - mm2);
+            const diffM = diffMm / 1000;
+            const diffFtIn = formatMmToFtInFracOnly(diffMm);
+
+            document.getElementById('spotDiffM').innerText = `${diffM.toFixed(3)} m`;
+            document.getElementById('spotDiffMm').innerText = `${Math.round(diffMm).toLocaleString()} mm`;
+            document.getElementById('spotDiffFtIn').innerText = diffFtIn;
+
+            const distVal = parseFloat(document.getElementById('spotDistVal').value) || 0;
+            const distUnit = document.getElementById('spotDistUnit').value;
+
+            let distMm = 0;
+            if (distUnit === 'm') distMm = distVal * 1000;
+            else if (distUnit === 'mm') distMm = distVal;
+            else if (distUnit === 'ft') distMm = distVal * 304.8;
+
+            const slopePctEl = document.getElementById('spotSlopePct');
+            const slopeRatioEl = document.getElementById('spotSlopeRatio');
+
+            if (distMm > 0 && diffMm > 0) {
+                const slopePct = (diffMm / distMm) * 100;
+                const ratioVal = distMm / diffMm;
+
+                slopePctEl.innerText = slopePct.toFixed(2) + '%';
+                slopeRatioEl.innerText = `1:${ratioVal.toFixed(2)}`;
+
+                document.getElementById('spotSlopeInput').value = parseFloat(slopePct.toFixed(2));
+                document.getElementById('spotSlopeType').value = 'pct';
+            } else {
+                slopePctEl.innerText = "0.00%";
+                slopeRatioEl.innerText = "N/A";
+            }
+        }
+
+        function calculateSpotFromSlope() {
+            isCalculatingFromSlope = true;
+
+            const globalUnit = document.getElementById('spotGlobalUnit').value;
+            const val1 = document.getElementById('spotElev1').value;
+            const distVal = parseFloat(document.getElementById('spotDistVal').value) || 0;
+            const distUnit = document.getElementById('spotDistUnit').value;
+            const slopeInput = parseFloat(document.getElementById('spotSlopeInput').value) || 0;
+            const slopeType = document.getElementById('spotSlopeType').value;
+
+            const mm1 = parseValueToMm(val1, globalUnit);
+
+            let distMm = 0;
+            if (distUnit === 'm') distMm = distVal * 1000;
+            else if (distUnit === 'mm') distMm = distVal;
+            else if (distUnit === 'ft') distMm = distVal * 304.8;
+
+            let slopePct = 0;
+            let ratioVal = 0;
+
+            if (slopeType === 'pct') {
+                slopePct = slopeInput;
+                ratioVal = slopePct > 0 ? 100 / slopePct : 0;
+            } else {
+                ratioVal = slopeInput;
+                slopePct = ratioVal > 0 ? (1 / ratioVal) * 100 : 0;
+            }
+
+            const diffMm = distMm * (slopePct / 100);
+            const mm2 = mm1 + diffMm;
+
+            let formattedElev2 = "";
+            if (globalUnit === 'mm') formattedElev2 = Math.round(mm2).toString();
+            else if (globalUnit === 'm') formattedElev2 = (mm2 / 1000).toFixed(3);
+            else if (globalUnit === 'ft') formattedElev2 = (mm2 / 304.8).toFixed(3);
+            else if (globalUnit === 'ft_in') formattedElev2 = formatMmToFtInFracOnly(mm2);
+
+            document.getElementById('spotElev2').value = formattedElev2;
+
+            const diffM = diffMm / 1000;
+            document.getElementById('spotDiffM').innerText = `${diffM.toFixed(3)} m`;
+            document.getElementById('spotDiffMm').innerText = `${Math.round(diffMm).toLocaleString()} mm`;
+            document.getElementById('spotDiffFtIn').innerText = formatMmToFtInFracOnly(diffMm);
+
+            document.getElementById('spotSlopePct').innerText = slopePct.toFixed(2) + '%';
+            document.getElementById('spotSlopeRatio').innerText = ratioVal > 0 ? `1:${ratioVal.toFixed(2)}` : "N/A";
+
+            isCalculatingFromSlope = false;
+        }
+
+        // --- WALL ASSEMBLY CALCULATOR ---
+        function toggleSprayFoam() {
+            const cavityVal = document.getElementById('cavityInsul').value;
+            const sprayFoamRow = document.getElementById('sprayFoamRow');
+            if (cavityVal === 'spray_foam') {
+                sprayFoamRow.classList.remove('hidden');
+            } else {
+                sprayFoamRow.classList.add('hidden');
+            }
+        }
+
+        function handleCladdingChange() {
+            const cladding = document.getElementById('claddingType').value;
+            const ciSection = document.getElementById('ciSectionWrapper');
+            const ciBadge = document.getElementById('ciStatusBadge');
+
+            if (cladding.startsWith('stucco_')) {
+                ciSection.style.opacity = "0.5";
+                ciBadge.innerText = "Overridden by Integrated Stucco Insulation";
+                ciBadge.className = "text-[10px] bg-sky-50 text-sky-700 px-2 py-0.5 rounded border border-sky-200";
+            } else {
+                ciSection.style.opacity = "1.0";
+                ciBadge.innerText = "Active Control";
+                ciBadge.className = "text-[10px] bg-white text-slate-600 px-2 py-0.5 rounded border border-slate-200";
+            }
+            calculateWall();
+        }
+
+        function calculateWall() {
+            const cladding = document.getElementById('claddingType').value;
+            const stud = document.getElementById('studFraming').value;
+            const sheathing = document.getElementById('sheathingType').value;
+            const cavity = document.getElementById('cavityInsul').value;
+            const interior = document.getElementById('interiorFinish').value;
+
+            let thicknessMm = 0;
+            let ciMm = 0;
+            let ciRsi = 0;
+
+            if (cladding === 'brick') {
+                thicknessMm += (90 + 25); 
+            } else if (cladding === 'stucco_50') {
+                thicknessMm += 50; 
+                ciMm = 50;
+            } else if (cladding === 'stucco_64') {
+                thicknessMm += 64; 
+                ciMm = 64;
+            } else if (cladding === 'stucco_75') {
+                thicknessMm += 75; 
+                ciMm = 75;
+            } else if (cladding === 'wood_siding') {
+                thicknessMm += (19 + 19); 
+            } else if (cladding === 'metal_siding') {
+                thicknessMm += (22 + 19); 
+            } else if (cladding === 'metal_comp') {
+                thicknessMm += (5 + 60);  
+            }
+
+            if (cladding.startsWith('stucco_')) {
+                ciRsi = (ciMm * 0.0276); 
+            } else {
+                let ciType = document.getElementById('ciType').value;
+                ciMm = parseFloat(document.getElementById('ciThicknessMm').value) || 0;
+                thicknessMm += ciMm;
+
+                let rsiPerMm = 0.0276; 
+                if (ciType === 'batt') rsiPerMm = 0.0276; 
+                else if (ciType === 'spray') rsiPerMm = 0.0414; 
+
+                if (ciType !== 'none') {
+                    ciRsi = ciMm * rsiPerMm;
+                }
+            }
+
+            let sheathingMm = 12.7;
+            let sheathingRsi = 0.11; 
+            if (sheathing === 'plywood_15') {
+                sheathingMm = 15.9;
+                sheathingRsi = 0.14;
+            } else if (sheathing === 'plywood_19') {
+                sheathingMm = 19.0;
+                sheathingRsi = 0.18;
+            } else if (sheathing === 'densglass_12') {
+                sheathingMm = 12.7;
+                sheathingRsi = 0.08;
+            } else if (sheathing === 'densglass_15') {
+                sheathingMm = 15.9;
+                sheathingRsi = 0.10;
+            }
+            thicknessMm += sheathingMm;
+
+            let studDepth = 140; 
+            if (stud === 'wood_2x4') studDepth = 89;
+            else if (stud === 'steel_92') studDepth = 92;
+            else if (stud === 'steel_152') studDepth = 152;
+            else if (stud === 'steel_203') studDepth = 203;
+
+            thicknessMm += studDepth;
+
+            let foamMm = parseFloat(document.getElementById('foamThicknessMm').value) || 90;
+            if (cavity === 'spray_foam') {
+                if (foamMm > studDepth) studDepth = foamMm;
+            }
+
+            thicknessMm += (interior === 'gypsum_15' ? 15.9 : 12.7);
+            const thicknessIn = (thicknessMm / 25.4).toFixed(1);
+
+            let cavityRsi = 0;
+            if (cavity === 'rsi_3.8') cavityRsi = 3.8;
+            else if (cavity === 'rsi_2.4') cavityRsi = 2.4;
+            else if (cavity === 'rsi_4.2') cavityRsi = 4.2;
+            else if (cavity === 'spray_foam') {
+                cavityRsi = foamMm * 0.0414;
+            }
+
+            let baseRsi = 0.30 + 0.10 + 0.08 + sheathingRsi; 
+            
+            let insulationOnlyRsi = cavityRsi + ciRsi;
+            let nominalRsi = baseRsi + cavityRsi + ciRsi;
+
+            let framingFactor = 0.80; 
+            if (stud.includes('steel')) {
+                framingFactor = 0.45;
+            }
+            let effectiveCavityRsi = cavityRsi * framingFactor;
+            let effectiveRsi = baseRsi + effectiveCavityRsi + ciRsi;
+
+            let insulationOnlyRval = Math.round(insulationOnlyRsi * 5.678);
+            let nominalRval = Math.round(nominalRsi * 5.678);
+            let effectiveRval = Math.round(effectiveRsi * 5.678);
+
+            document.getElementById('resThickness').innerText = Math.round(thicknessMm) + ' mm';
+            document.getElementById('resThicknessIn').innerText = thicknessIn + ' inches';
+            document.getElementById('resInsulationOnly').innerText = `R-${insulationOnlyRval} (RSI ${insulationOnlyRsi.toFixed(2)})`;
+            document.getElementById('resNominal').innerText = `R-${nominalRval} (RSI ${nominalRsi.toFixed(2)})`;
+            document.getElementById('resEffective').innerText = `R-${effectiveRval} (RSI ${effectiveRsi.toFixed(2)})`;
+        }
+
+        // --- MODULE 6: M/D RATIO CALCULATOR (OBC 2.6.4) ---
+        function calculateMD() {
+            const shape = document.getElementById('mdShape').value;
+            const massM = parseFloat(document.getElementById('mdMass').value) || 0;
+            const dimB = parseFloat(document.getElementById('mdDimB').value) || 0;
+            const dimH = parseFloat(document.getElementById('mdDimH').value) || 0;
+
+            const wrapperH = document.getElementById('wrapperDimH');
+            const labelB = document.getElementById('labelB');
+
+            let perimeterMm = 0;
+
+            if (shape === 'Wide Flange Column') {
+                wrapperH.style.display = "block";
+                labelB.innerText = "Flange Width B (mm)";
+                perimeterMm = 2 * (dimB + dimH);
+            } else if (shape === 'HSS Rectangular') {
+                wrapperH.style.display = "block";
+                labelB.innerText = "Flange Width B (mm)";
+                perimeterMm = 2 * (dimB + dimH);
+            } else if (shape === 'HSS Round') {
+                wrapperH.style.display = "none";
+                labelB.innerText = "Outer Diameter B (mm)";
+                perimeterMm = Math.PI * dimB;
+            }
+
+            const perimeterM = perimeterMm / 1000;
+            let mdRatio = 0;
+            if (perimeterM > 0) {
+                mdRatio = massM / perimeterM;
+            }
+
+            document.getElementById('resPerimeterMm').innerText = perimeterMm.toFixed(1) + ' mm';
+            document.getElementById('resPerimeterM').innerText = perimeterM.toFixed(3) + ' m';
+            document.getElementById('resMDRatio').innerText = mdRatio.toFixed(2);
+        }
+
+        // Initialize all modules on load
+        runConversion();
+        runAreaConversion();
+        calculateSpace();
+        calculateCustomScale();
+        calculateStairs();
+        onRampRatioInput();
+        calculateSlopeFromDimensions();
+        calculateSpotElevations();
+        toggleSprayFoam();
+        handleCladdingChange();
+        populateSectionSizes();
+        calculateMD();
+    </script>
+</body>
+</html>
