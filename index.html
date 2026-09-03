@@ -152,7 +152,7 @@
                                     <option value="hectares">Hectares</option>
                                 </select>
                                 <div>
-                                    <label class="block text-xs text-slate-500 mb-1">Converted Area Result (Up to 6 Decimals) <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
+                                    <label class="block text-xs text-slate-500 mb-1">Converted Area Result (Up to 6 Decimals Max) <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
                                     <input type="text" id="outputAreaValue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-lg px-4 py-2.5 text-emerald-600 font-mono font-bold focus:outline-none copyable" onclick="copyValue(this)">
                                 </div>
                             </div>
@@ -187,11 +187,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resSpaceSqFt')">
                                 <span class="block text-xs text-slate-500 mb-1">Area in Imperial <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></span>
-                                <span id="resSpaceSqFt" class="font-mono text-sky-600 text-xl font-bold">0.00 sq ft</span>
+                                <span id="resSpaceSqFt" class="font-mono text-sky-600 text-xl font-bold">0 sq ft</span>
                             </div>
                             <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resSpaceSqM')">
                                 <span class="block text-xs text-slate-500 mb-1">Area in Metric <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></span>
-                                <span id="resSpaceSqM" class="font-mono text-emerald-600 text-xl font-bold">0.00 sq m</span>
+                                <span id="resSpaceSqM" class="font-mono text-emerald-600 text-xl font-bold">0 sq m</span>
                             </div>
                         </div>
                     </div>
@@ -280,7 +280,7 @@
                             </div>
                             <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRise')">
                                 <span class="block text-[10px] text-slate-400">Rise per Step <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                <span id="optRise" class="font-mono text-slate-800 font-bold text-base">0.0 mm</span>
+                                <span id="optRise" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
                             </div>
                             <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRun')">
                                 <span class="block text-[10px] text-slate-400">Default Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
@@ -316,7 +316,7 @@
                                 </div>
                                 <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customRise')">
                                     <span class="block text-[10px] text-slate-400">Actual Rise <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                    <span id="customRise" class="font-mono text-slate-800 font-bold text-base">0.0 mm</span>
+                                    <span id="customRise" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
                                 </div>
                                 <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customTotalRun')">
                                     <span class="block text-[10px] text-slate-400">Total Run (Go) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
@@ -363,7 +363,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Required Horizontal Run <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
-                                <div id="rampRunResult" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-emerald-600 font-mono font-bold copyable" onclick="copyBoxValue(this, 'rampRunResult')">0 mm (0.00 m)</div>
+                                <div id="rampRunResult" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-emerald-600 font-mono font-bold copyable" onclick="copyBoxValue(this, 'rampRunResult')">0 mm (0 m)</div>
                             </div>
                             <div id="rampLandingNoticeRise" class="p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500">
                                 Evaluating ramp compliance...
@@ -390,7 +390,7 @@
                                 </div>
                                 <div class="bg-white p-2.5 rounded border border-slate-200 text-center copyable" onclick="copyBoxValue(this, 'resCheckPercent')">
                                     <span class="block text-[10px] text-slate-400">Slope % <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                    <span id="resCheckPercent" class="font-mono text-emerald-600 font-bold text-sm">0.00%</span>
+                                    <span id="resCheckPercent" class="font-mono text-emerald-600 font-bold text-sm">0%</span>
                                 </div>
                             </div>
                             <div id="rampCheckNotice" class="p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500">
@@ -458,7 +458,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-4 pt-2">
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotDiffM')">
                             <span class="block text-xs text-slate-500 mb-1">Difference (m) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
-                            <span id="spotDiffM" class="font-mono text-sky-600 text-lg font-bold">0.000 m</span>
+                            <span id="spotDiffM" class="font-mono text-sky-600 text-lg font-bold">0 m</span>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotDiffMm')">
                             <span class="block text-xs text-slate-500 mb-1">Difference (mm) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
@@ -470,7 +470,7 @@
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotSlopePct')">
                             <span class="block text-xs text-slate-500 mb-1">Slope % <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
-                            <span id="spotSlopePct" class="font-mono text-emerald-600 text-lg font-bold">0.00%</span>
+                            <span id="spotSlopePct" class="font-mono text-emerald-600 text-lg font-bold">0%</span>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotSlopeRatio')">
                             <span class="block text-xs text-slate-500 mb-1">Slope Ratio <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
@@ -588,7 +588,7 @@
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs md:col-span-1 copyable" onclick="copyBoxValue(this, 'resThickness')">
                             <span class="block text-xs text-slate-500 mb-1">Total Assembly Thickness <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
                             <span id="resThickness" class="font-mono text-slate-900 text-xl font-bold">295 mm</span>
-                            <span id="resThicknessIn" class="block text-xs text-slate-400 mt-1">11.6 inches</span>
+                            <span id="resThicknessIn" class="block text-xs text-slate-400 mt-1">11.6"</span>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs md:col-span-1 copyable" onclick="copyBoxValue(this, 'resInsulationOnly')">
                             <span class="block text-xs text-slate-500 mb-1">Insulation-Only Value <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
@@ -661,11 +661,11 @@
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resPerimeterM')">
                             <span class="block text-xs text-slate-500 mb-1">Heated Perimeter D (m) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
-                            <span id="resPerimeterM" class="font-mono text-sky-600 text-lg font-bold">0.000 m</span>
+                            <span id="resPerimeterM" class="font-mono text-sky-600 text-lg font-bold">0 m</span>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resMDRatio')">
                             <span class="block text-xs text-slate-500 mb-1">M / D Ratio (kg/m²) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
-                            <span id="resMDRatio" class="font-mono text-emerald-600 text-xl font-bold">0.00</span>
+                            <span id="resMDRatio" class="font-mono text-emerald-600 text-xl font-bold">0</span>
                         </div>
                     </div>
                 </div>
@@ -1298,7 +1298,7 @@
         }
 
         function extractNumeric(text) {
-            let clean = text.replace(/,/g, '').replace(/\s*(mm|m|sq ft|sq m|in|ft|kg\/m²|Landings|Landing|Required|%)/gi, '').trim();
+            let clean = text.replace(/,/g, '').replace(/\s*(mm|m|sq ft|sq m|in|ft|kg\/m²|Landings|Landing|Required|%)/gi, '').replace(/"/g, '').trim();
             return clean;
         }
 
@@ -1317,6 +1317,11 @@
             navigator.clipboard.writeText(numericVal).then(() => {
                 showToast();
             });
+        }
+
+        // --- DYNAMIC FORMATTER (Max 6 decimals, no trailing zeros) ---
+        function formatNumber(num) {
+            return parseFloat(num.toFixed(6)).toString();
         }
 
         // --- CONVERTER ENGINE (LENGTH) ---
@@ -1338,10 +1343,6 @@
                 return (feet * 304.8) + (inches * 25.4);
             }
             return 0;
-        }
-
-        function formatNumber(num) {
-            return parseFloat(num.toFixed(6)).toString();
         }
 
         function formatMmToFtInFracOnly(mm) {
@@ -1380,11 +1381,12 @@
         }
 
         function formatMmToFtInDecOnly(mm) {
-            if (mm === 0) return "0'-0.00\"";
+            if (mm === 0) return "0'-0\"";
             let totalInches = mm / 25.4;
             let feet = Math.floor(totalInches / 12);
             let remInches = totalInches % 12;
-            return `${feet}'-${remInches.toFixed(2)}"`;
+            let formattedInches = parseFloat(remInches.toFixed(6)).toString();
+            return `${feet}'-${formattedInches}"`;
         }
 
         function formatMmFromTarget(mm, targetUnit) {
@@ -1392,7 +1394,7 @@
             if (targetUnit === 'mm') return formatNumber(mm) + ' mm';
             if (targetUnit === 'cm') return formatNumber(mm / 10) + ' cm';
             if (targetUnit === 'm') return formatNumber(mm / 1000) + ' m';
-            if (targetUnit === 'in') return formatNumber(mm / 25.4) + ' in';
+            if (targetUnit === 'in') return formatNumber(mm / 25.4) + '"';
             if (targetUnit === 'ft') return formatNumber(mm / 304.8) + ' ft';
             return '';
         }
@@ -1453,7 +1455,7 @@
                 case 'hectares': val = sqMeters / 10_000; break;
                 default: val = sqMeters; break;
             }
-            return parseFloat(val.toFixed(6)).toString();
+            return formatNumber(val);
         }
 
         function runAreaConversion() {
@@ -1479,8 +1481,8 @@
             const areaSqM = (lengthMm / 1000) * (widthMm / 1000);
             const areaSqFt = areaSqM * 10.76391042;
 
-            document.getElementById('resSpaceSqFt').innerText = `${parseFloat(areaSqFt.toFixed(2)).toLocaleString()} sq ft`;
-            document.getElementById('resSpaceSqM').innerText = `${parseFloat(areaSqM.toFixed(2)).toLocaleString()} sq m`;
+            document.getElementById('resSpaceSqFt').innerText = `${parseFloat(formatNumber(areaSqFt))} sq ft`;
+            document.getElementById('resSpaceSqM').innerText = `${parseFloat(formatNumber(areaSqM))} sq m`;
         }
 
         // --- SCALE CONVERTER ENGINE ---
@@ -1533,7 +1535,7 @@
             let notation = rawStr.includes('/') || rawStr.includes('.') ? `${rawStr}" = 1'-0"` : `${inches}" = 1'-0"`;
 
             document.getElementById('resScaleNotation').innerText = notation;
-            document.getElementById('resScaleFactor').innerText = scaleFactor > 0 ? parseFloat(scaleFactor.toFixed(4)).toString() : "0";
+            document.getElementById('resScaleFactor').innerText = scaleFactor > 0 ? formatNumber(scaleFactor) : "0";
         }
 
         // --- DUAL STAIR CALCULATOR ---
@@ -1557,12 +1559,12 @@
 
             if (totalRise <= 0) {
                 document.getElementById('optRisers').innerText = "0";
-                document.getElementById('optRise').innerText = "0.0 mm";
+                document.getElementById('optRise').innerText = "0 mm";
                 document.getElementById('optLandings').innerText = "0 Landings";
                 document.getElementById('optLandings').className = "font-mono text-emerald-600 font-bold";
                 
                 document.getElementById('customRisers').innerText = "0";
-                document.getElementById('customRise').innerText = "0.0 mm";
+                document.getElementById('customRise').innerText = "0 mm";
                 document.getElementById('customTotalRun').innerText = "0 mm";
                 
                 const box = document.getElementById('stairComplianceBox');
@@ -1577,7 +1579,7 @@
             const optimizedRise = totalRise / minRisers;
             
             document.getElementById('optRisers').innerText = minRisers;
-            document.getElementById('optRise').innerText = optimizedRise.toFixed(1) + ' mm';
+            document.getElementById('optRise').innerText = formatNumber(optimizedRise) + ' mm';
             document.getElementById('optRun').innerText = '280 mm';
 
             const maxFlightHeight = 3700;
@@ -1603,15 +1605,15 @@
             const totalRun = (customRisers - 1) * run;
 
             document.getElementById('customRisers').innerText = customRisers;
-            document.getElementById('customRise').innerText = actualRise.toFixed(1) + ' mm';
-            document.getElementById('customTotalRun').innerText = totalRun.toLocaleString() + ' mm';
+            document.getElementById('customRise').innerText = formatNumber(actualRise) + ' mm';
+            document.getElementById('customTotalRun').innerText = formatNumber(totalRun) + ' mm';
 
             const box = document.getElementById('stairComplianceBox');
             const text = document.getElementById('stairComplianceText');
 
             let errors = [];
             if (actualRise < 125 || actualRise > 180) {
-                errors.push(`Actual Rise (${actualRise.toFixed(1)} mm) exceeds limits (125-180mm).`);
+                errors.push(`Actual Rise (${formatNumber(actualRise)} mm) exceeds limits (125-180mm).`);
             }
             if (run > 0 && (run < 280 || run > 355)) {
                 errors.push(`Tread Run (${run} mm) is outside limits (280-355mm).`);
@@ -1637,7 +1639,7 @@
                 const ratio = parseFloat(val) || 0;
                 if (ratio > 0) {
                     const percent = (1 / ratio) * 100;
-                    document.getElementById('rampPercent').value = parseFloat(percent.toFixed(4));
+                    document.getElementById('rampPercent').value = formatNumber(percent);
                 } else {
                     document.getElementById('rampPercent').value = 0;
                 }
@@ -1653,7 +1655,7 @@
                 const percent = parseFloat(val) || 0;
                 if (percent > 0) {
                     const ratio = 100 / percent;
-                    document.getElementById('rampRatio').value = parseFloat(ratio.toFixed(4));
+                    document.getElementById('rampRatio').value = formatNumber(ratio);
                 } else {
                     document.getElementById('rampRatio').value = 0;
                 }
@@ -1667,7 +1669,7 @@
             const ratio = ratioStr === "" ? 0 : (parseFloat(ratioStr) || 0);
 
             const run = rise * ratio;
-            document.getElementById('rampRunResult').innerText = `${run.toLocaleString()} mm (${(run/1000).toFixed(2)} m)`;
+            document.getElementById('rampRunResult').innerText = `${formatNumber(run)} mm (${formatNumber(run/1000)} m)`;
 
             updateRampLandingNotice(ratio, run, 'rampLandingNoticeRise');
         }
@@ -1681,7 +1683,7 @@
 
             if (rise <= 0 || run <= 0) {
                 ratioEl.innerText = "N/A";
-                percentEl.innerText = "0.00%";
+                percentEl.innerText = "0%";
                 noticeEl.className = "p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500";
                 noticeEl.innerText = "Enter rise and run to evaluate slope...";
                 return;
@@ -1690,15 +1692,15 @@
             const ratio = run / rise;
             const percent = (rise / run) * 100;
 
-            ratioEl.innerText = `1:${ratio.toFixed(2)}`;
-            percentEl.innerText = `${percent.toFixed(2)}%`;
+            ratioEl.innerText = `1:${formatNumber(ratio)}`;
+            percentEl.innerText = `${formatNumber(percent)}%`;
 
             updateRampLandingNotice(ratio, run, 'rampCheckNotice');
         }
 
         function updateRampLandingNotice(ratio, runMm, elementId) {
             const noticeEl = document.getElementById(elementId);
-            const maxRunWithoutLanding = 9000; // 9 meters max run
+            const maxRunWithoutLanding = 9000;
 
             if (ratio === 0 || isNaN(ratio)) {
                 noticeEl.className = "p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500";
@@ -1753,8 +1755,8 @@
             const diffM = diffMm / 1000;
             const diffFtIn = formatMmToFtInFracOnly(diffMm);
 
-            document.getElementById('spotDiffM').innerText = `${diffM.toFixed(3)} m`;
-            document.getElementById('spotDiffMm').innerText = `${Math.round(diffMm).toLocaleString()} mm`;
+            document.getElementById('spotDiffM').innerText = `${formatNumber(diffM)} m`;
+            document.getElementById('spotDiffMm').innerText = `${formatNumber(diffMm)} mm`;
             document.getElementById('spotDiffFtIn').innerText = diffFtIn;
 
             const distVal = parseFloat(document.getElementById('spotDistVal').value) || 0;
@@ -1772,13 +1774,13 @@
                 const slopePct = (diffMm / distMm) * 100;
                 const ratioVal = distMm / diffMm;
 
-                slopePctEl.innerText = slopePct.toFixed(2) + '%';
-                slopeRatioEl.innerText = `1:${ratioVal.toFixed(2)}`;
+                slopePctEl.innerText = formatNumber(slopePct) + '%';
+                slopeRatioEl.innerText = `1:${formatNumber(ratioVal)}`;
 
-                document.getElementById('spotSlopeInput').value = parseFloat(slopePct.toFixed(2));
+                document.getElementById('spotSlopeInput').value = formatNumber(slopePct);
                 document.getElementById('spotSlopeType').value = 'pct';
             } else {
-                slopePctEl.innerText = "0.00%";
+                slopePctEl.innerText = "0%";
                 slopeRatioEl.innerText = "N/A";
             }
         }
@@ -1815,20 +1817,20 @@
             const mm2 = mm1 + diffMm;
 
             let formattedElev2 = "";
-            if (globalUnit === 'mm') formattedElev2 = Math.round(mm2).toString();
-            else if (globalUnit === 'm') formattedElev2 = (mm2 / 1000).toFixed(3);
-            else if (globalUnit === 'ft') formattedElev2 = (mm2 / 304.8).toFixed(3);
+            if (globalUnit === 'mm') formattedElev2 = formatNumber(mm2);
+            else if (globalUnit === 'm') formattedElev2 = formatNumber(mm2 / 1000);
+            else if (globalUnit === 'ft') formattedElev2 = formatNumber(mm2 / 304.8);
             else if (globalUnit === 'ft_in') formattedElev2 = formatMmToFtInFracOnly(mm2);
 
             document.getElementById('spotElev2').value = formattedElev2;
 
             const diffM = diffMm / 1000;
-            document.getElementById('spotDiffM').innerText = `${diffM.toFixed(3)} m`;
-            document.getElementById('spotDiffMm').innerText = `${Math.round(diffMm).toLocaleString()} mm`;
+            document.getElementById('spotDiffM').innerText = `${formatNumber(diffM)} m`;
+            document.getElementById('spotDiffMm').innerText = `${formatNumber(diffMm)} mm`;
             document.getElementById('spotDiffFtIn').innerText = formatMmToFtInFracOnly(diffMm);
 
-            document.getElementById('spotSlopePct').innerText = slopePct.toFixed(2) + '%';
-            document.getElementById('spotSlopeRatio').innerText = ratioVal > 0 ? `1:${ratioVal.toFixed(2)}` : "N/A";
+            document.getElementById('spotSlopePct').innerText = formatNumber(slopePct) + '%';
+            document.getElementById('spotSlopeRatio').innerText = ratioVal > 0 ? `1:${formatNumber(ratioVal)}` : "N/A";
 
             isCalculatingFromSlope = false;
         }
@@ -1938,7 +1940,7 @@
             }
 
             thicknessMm += (interior === 'gypsum_15' ? 15.9 : 12.7);
-            const thicknessIn = (thicknessMm / 25.4).toFixed(1);
+            const thicknessIn = formatNumber(thicknessMm / 25.4);
 
             let cavityRsi = 0;
             if (cavity === 'rsi_3.8') cavityRsi = 3.8;
@@ -1964,11 +1966,11 @@
             let nominalRval = Math.round(nominalRsi * 5.678);
             let effectiveRval = Math.round(effectiveRsi * 5.678);
 
-            document.getElementById('resThickness').innerText = Math.round(thicknessMm) + ' mm';
-            document.getElementById('resThicknessIn').innerText = thicknessIn + ' inches';
-            document.getElementById('resInsulationOnly').innerText = `R-${insulationOnlyRval} (RSI ${insulationOnlyRsi.toFixed(2)})`;
-            document.getElementById('resNominal').innerText = `R-${nominalRval} (RSI ${nominalRsi.toFixed(2)})`;
-            document.getElementById('resEffective').innerText = `R-${effectiveRval} (RSI ${effectiveRsi.toFixed(2)})`;
+            document.getElementById('resThickness').innerText = formatNumber(thicknessMm) + ' mm';
+            document.getElementById('resThicknessIn').innerText = thicknessIn + '"';
+            document.getElementById('resInsulationOnly').innerText = `R-${insulationOnlyRval} (RSI ${formatNumber(insulationOnlyRsi)})`;
+            document.getElementById('resNominal').innerText = `R-${nominalRval} (RSI ${formatNumber(nominalRsi)})`;
+            document.getElementById('resEffective').innerText = `R-${effectiveRval} (RSI ${formatNumber(effectiveRsi)})`;
         }
 
         // --- MODULE 6: M/D RATIO CALCULATOR (OBC 2.6.4) ---
@@ -2003,9 +2005,9 @@
                 mdRatio = massM / perimeterM;
             }
 
-            document.getElementById('resPerimeterMm').innerText = perimeterMm.toFixed(1) + ' mm';
-            document.getElementById('resPerimeterM').innerText = perimeterM.toFixed(3) + ' m';
-            document.getElementById('resMDRatio').innerText = mdRatio.toFixed(2);
+            document.getElementById('resPerimeterMm').innerText = formatNumber(perimeterMm) + ' mm';
+            document.getElementById('resPerimeterM').innerText = formatNumber(perimeterM) + ' m';
+            document.getElementById('resMDRatio').innerText = formatNumber(mdRatio);
         }
 
         // Initialize all modules on load
