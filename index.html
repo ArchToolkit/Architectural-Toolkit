@@ -269,7 +269,7 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="w-full md:w-3/4">
                             <label id="stairRiseLabel" class="block text-xs font-medium text-slate-600 mb-1">Floor-to-Floor Height (mm)</label>
-                            <input type="text" id="stairTotalRise" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="onTotalRiseInput()">
+                            <input type="text" id="stairTotalRise" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateStairs()">
                         </div>
                         <div class="w-full md:w-1/4">
                             <label class="block text-xs font-medium text-slate-600 mb-1">Unit Selection</label>
@@ -282,7 +282,7 @@
 
                     <div class="bg-slate-50 p-4 rounded-lg border border-sky-100 space-y-3">
                         <div id="optRiseHeader" class="text-xs font-semibold text-sky-600 uppercase tracking-wider">Output 1: Minimum Risers Solution (Max 180mm Rise)</div>
-                        <div class="grid grid-cols-3 gap-2 text-center pt-1">
+                        <div id="optGridContainer" class="grid grid-cols-4 gap-2 text-center pt-1">
                             <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRisers')">
                                 <span class="block text-[10px] text-slate-400">Risers Count <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
                                 <span id="optRisers" class="font-mono text-emerald-600 font-bold text-base">0</span>
@@ -295,7 +295,12 @@
                                 <span class="block text-[10px] text-slate-400">Default Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
                                 <span id="optRun" class="font-mono text-slate-800 font-bold text-base">280 mm</span>
                             </div>
+                            <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optTotalRun')">
+                                <span class="block text-[10px] text-slate-400">Total Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                <span id="optTotalRun" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
+                            </div>
                         </div>
+
                         <div id="landingNoticeContainer" class="bg-white p-2.5 rounded border border-slate-200 flex justify-between items-center text-xs shadow-2xs">
                             <span class="text-slate-500">Required Landings:</span>
                             <span id="optLandings" class="font-mono text-amber-600 font-bold">0 Landings</span>
@@ -307,12 +312,12 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Desired Number of Risers</label>
-                                <input type="number" id="stairTargetRisersCount" value="0" step="1" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateStairs()" placeholder="Auto-calculated if 0">
-                                <span class="text-[10px] text-slate-400 mt-0.5 block">Leave 0 to use minimum risers</span>
+                                <input type="number" id="stairTargetRisersCount" value="0" step="1" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" placeholder="Auto-calculated if 0" oninput="markTargetRisersModified()">
+                                <span class="text-[10px] text-slate-400 mt-0.5 block">Auto-syncs with Output 1 until changed</span>
                             </div>
                             <div>
                                 <label id="stairRunLabel" class="block text-xs font-medium text-slate-600 mb-1">Tread Run / Depth (mm)</label>
-                                <input type="number" id="stairRun" value="0" step="any" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateStairs()">
+                                <input type="number" id="stairRun" value="0" step="1" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500">
                             </div>
                         </div>
 
@@ -330,6 +335,17 @@
                                 <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customTotalRun')">
                                     <span class="block text-[10px] text-slate-400">Total Run (Go) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
                                     <span id="customTotalRun" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
+                                </div>
+                            </div>
+                            <!-- Extra Output 2 Total Run Containers for Inches Mode -->
+                            <div id="customFtInTotalRunContainer" class="hidden grid grid-cols-2 gap-2 pt-1">
+                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable text-center" onclick="copyBoxValue(this, 'customTotalRunIn')">
+                                    <span class="block text-[10px] text-slate-400">Total Run (Inches) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                    <span id="customTotalRunIn" class="font-mono text-slate-800 font-bold text-sm">0"</span>
+                                </div>
+                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable text-center" onclick="copyBoxValue(this, 'customTotalRunFtIn')">
+                                    <span class="block text-[10px] text-slate-400">Total Run (Ft + Frac) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                                    <span id="customTotalRunFtIn" class="font-mono text-slate-800 font-bold text-sm">0'-0"</span>
                                 </div>
                             </div>
                             <div id="stairComplianceBox" class="p-3 rounded-lg border text-xs transition-colors mt-2">
@@ -352,35 +368,34 @@
 
                 <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Slope Ratio (1 : X)</label>
-                            <input type="number" id="rampRatio" value="0" step="any" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="onRampRatioInput()">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Slope Percentage (%)</label>
-                            <input type="number" id="rampPercent" value="0" step="any" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="onRampPercentInput()">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                        <!-- Mode A: Given Rise -> Find Run -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                            <span class="block text-xs font-semibold text-sky-600 uppercase tracking-wider">Calculate Run from Rise &amp; Ratio</span>
+                        <!-- Section 1: Slope Ratio, Percentage & Run from Rise -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                            <span class="block text-xs font-semibold text-sky-600 uppercase tracking-wider">Slope Ratio, Percentage &amp; Run from Rise</span>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Slope Ratio (1 : X)</label>
+                                    <input type="number" id="rampRatio" value="0" step="any" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-sky-500" oninput="onRampRatioInput()">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Slope Percentage (%)</label>
+                                    <input type="number" id="rampPercent" value="0" step="any" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-sky-500" oninput="onRampPercentInput()">
+                                </div>
+                            </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Vertical Rise (mm)</label>
-                                <input type="number" id="rampRise" value="0" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateRampFromRise()">
+                                <input type="number" id="rampRise" value="0" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-slate-800 font-mono text-xs focus:outline-none focus:border-sky-500" oninput="calculateRampFromRise()">
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Required Horizontal Run <span class="text-[10px] text-sky-600 lowercase">(click to copy)</span></label>
-                                <div id="rampRunResult" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-emerald-600 font-mono font-bold copyable" onclick="copyBoxValue(this, 'rampRunResult')">0 mm (0 m)</div>
+                                <div id="rampRunResult" class="w-full bg-white border border-slate-200 rounded-lg px-4 py-2 text-emerald-600 font-mono font-bold text-xs copyable" onclick="copyBoxValue(this, 'rampRunResult')">0 mm (0 m)</div>
                             </div>
                             <div id="rampLandingNoticeRise" class="p-2.5 rounded border border-slate-200 text-xs bg-white text-slate-500">
                                 Evaluating ramp compliance...
                             </div>
                         </div>
 
-                        <!-- Mode B: Given Run & Rise -> Find Slope & Height -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <!-- Section 2: Calculate Slope from Rise & Run -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
                             <span class="block text-xs font-semibold text-sky-600 uppercase tracking-wider">Calculate Slope from Rise &amp; Run</span>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
@@ -475,7 +490,7 @@
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotDiffFtIn')">
                             <span class="block text-xs text-slate-500 mb-1">Difference (ft-in) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
-                            <span id="spotDiffFtIn" class="font-mono text-sky-700 text-lg font-bold">0'-0"</span>
+                            <span id="spotDiffFtIn" class="font-mono text-slate-700 text-lg font-bold">0'-0"</span>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'spotSlopePct')">
                             <span class="block text-xs text-slate-500 mb-1">Slope % <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
@@ -689,7 +704,7 @@
     <script>
         // --- EMBEDDED STEEL SECTION DATABASE FROM EXCEL ---
         const steelDatabase = {
-"W Sections": {
+            "W Sections": {
                 "W1100X499": { "mass": 499.0, "height": 1120, "width": 404 },
                 "W1100X433": { "mass": 433.0, "height": 1110, "width": 401 },
                 "W1100X390": { "mass": 390.0, "height": 1100, "width": 401 },
@@ -973,8 +988,8 @@
                 "W130X28.1": { "mass": 28.1, "height": 131, "width": 128 },
                 "W130X23.8": { "mass": 23.8, "height": 127, "width": 127 },
                 "W100X19.3": { "mass": 19.3, "height": 106, "width": 103 }
-        },
-"HSS Sections": {
+            },
+            "HSS Sections": {
                 "HSS 355.6x355.6x22.2": { "mass": 223.0, "height": 356.0, "width": 356.0 },
                 "HSS 355.6x355.6x19": { "mass": 194.0, "height": 356.0, "width": 356.0 },
                 "HSS 355.6x355.6x15.9": { "mass": 164.0, "height": 356.0, "width": 356.0 },
@@ -1118,8 +1133,8 @@
                 "HSS 76.2x76.2x6.4": { "mass": 13.1, "height": 76.2, "width": 76.2 },
                 "HSS 76.2x76.2x4.8": { "mass": 10.2, "height": 76.2, "width": 76.2 },
                 "HSS 76.2x76.2x3.2": { "mass": 7.06, "height": 76.2, "width": 76.2 }
-        },
-"HSS Circular Sections": {
+            },
+            "HSS Circular Sections": {
                 "HSS 508x12.7": { "mass": 155.0, "height": 0.0, "width": 508.0 },
                 "HSS 508x9.5": { "mass": 117.0, "height": 0.0, "width": 508.0 },
                 "HSS 457.2x12.7": { "mass": 139.0, "height": 0.0, "width": 457.0 },
@@ -1248,7 +1263,7 @@
                 "HSS 48.3x3.7": { "mass": 4.05, "height": 0.0, "width": 48.3 },
                 "HSS 48.3x3.0": { "mass": 3.4, "height": 0.0, "width": 48.3 },
                 "HSS 42.2x3.6": { "mass": 3.38, "height": 0.0, "width": 42.2 }
-        }
+            }
         };
 
         const shapeToSheet = {
@@ -1333,6 +1348,11 @@
             return parseFloat(num.toFixed(6)).toString();
         }
 
+        // --- DYNAMIC FORMATTER (Max 3 decimals, no trailing zeros) ---
+        function formatNumber3(num) {
+            return parseFloat(num.toFixed(3)).toString();
+        }
+
         // --- CONVERTER ENGINE (LENGTH) ---
         function parseInputToMm(valStr, unit) {
             valStr = valStr.toString().trim();
@@ -1352,6 +1372,18 @@
                 return (feet * 304.8) + (inches * 25.4);
             }
             return 0;
+        }
+
+        function parseFraction(str) {
+            str = str.toString().trim();
+            if (!str) return 0;
+            if (str.includes('/')) {
+                let parts = str.split('/');
+                let num = parseFloat(parts[0]);
+                let den = parseFloat(parts[1]);
+                if (den && den !== 0) return num / den;
+            }
+            return parseFloat(str) || 0;
         }
 
         function formatMmToFtInFracOnly(mm) {
@@ -1562,85 +1594,96 @@
         }
 
         // --- DUAL STAIR CALCULATOR ---
+        let previousStairUnit = 'mm';
+        let userModifiedRun = false;
+        let userModifiedTargetRisers = false;
+
+        function parseStairRiseInput(valStr, unit) {
+            valStr = valStr.toString().trim();
+            if (!valStr || valStr === "0") return 0;
+
+            if (unit === 'mm') {
+                return parseFloat(valStr) || 0;
+            } else {
+                if (valStr.includes("'") || valStr.toLowerCase().includes('ft') || (valStr.includes('-') && !valStr.startsWith('-'))) {
+                    let clean = valStr.toLowerCase().replace(/"/g, '').replace(/'/g, ' ').replace(/ft/g, ' ').replace(/in/g, ' ');
+                    let parts = clean.trim().split(/[\s+-]+/);
+                    let feet = parseFloat(parts[0]) || 0;
+                    let inches = parts[1] ? parseFraction(parts[1]) : 0;
+                    return (feet * 12 + inches) * 25.4;
+                } else {
+                    let totalInches = parseFraction(valStr);
+                    return totalInches * 25.4;
+                }
+            }
+        }
+
         function onStairUnitChange() {
             const unit = document.getElementById('stairUnit').value;
             const riseInput = document.getElementById('stairTotalRise');
             const runInput = document.getElementById('stairRun');
             
-            let currentRiseStr = riseInput.value;
-            let currentRunVal = parseFloat(runInput.value) || 0;
+            let currentValStr = riseInput.value;
+            let riseMm = parseStairRiseInput(currentValStr, previousStairUnit);
 
-            document.getElementById('stairRiseLabel').innerText = unit === 'mm' ? 'Floor-to-Floor Height (mm)' : 'Floor-to-Floor Height (e.g. 9\'-6" or 114)';
+            let currentRunVal = parseFloat(runInput.value) || (previousStairUnit === 'mm' ? 280 : 11);
+            let runMm = previousStairUnit === 'mm' ? currentRunVal : (currentRunVal * 25.4);
+
+            document.getElementById('stairRiseLabel').innerText = unit === 'mm' ? 'Floor-to-Floor Height (mm)' : 'Floor-to-Floor Height (e.g. 10\'-0" or 120)';
             document.getElementById('stairRunLabel').innerText = unit === 'mm' ? 'Tread Run / Depth (mm)' : 'Tread Run / Depth (inches)';
             
             document.getElementById('optRiseHeader').innerText = unit === 'mm' 
                 ? 'Output 1: Minimum Risers Solution (Max 180mm Rise)' 
-                : 'Output 1: Minimum Risers Solution (Max 7.75" Rise)';
+                : 'Output 1: Minimum Risers Solution (Max 7.09" Rise)';
 
-            // Convert existing values when switching units
             if (unit === 'in') {
-                let mmRise = parseInputToMm(currentRiseStr, 'mm');
-                riseInput.value = mmRise > 0 ? formatNumber(mmRise / 25.4) : "0";
-                
-                let mmRun = currentRunVal > 0 ? currentRunVal : 280;
-                runInput.value = formatNumber(mmRun / 25.4);
+                riseInput.value = riseMm > 0 ? formatNumber(riseMm / 25.4) : "0";
+                runInput.value = userModifiedRun ? formatNumber(runMm / 25.4) : "11";
+                runInput.step = "0.25";
             } else {
-                let mmRise = parseInputToMm(currentRiseStr, 'ft_in'); // fallback parse
-                if (mmRise === 0) mmRise = (parseFloat(currentRiseStr) || 0) * 25.4;
-                riseInput.value = mmRise > 0 ? formatNumber(mmRise) : "0";
-                
-                let inchRun = currentRunVal > 0 ? currentRunVal : 11;
-                runInput.value = formatNumber(inchRun * 25.4);
+                riseInput.value = riseMm > 0 ? formatNumber(riseMm) : "0";
+                runInput.value = userModifiedRun ? formatNumber(runMm) : "280";
+                runInput.step = "1";
             }
-            onTotalRiseInput();
+
+            previousStairUnit = unit;
+            userModifiedTargetRisers = false; 
+            calculateStairs();
         }
 
-        function onTotalRiseInput() {
-            const unit = document.getElementById('stairUnit').value;
-            const riseStr = document.getElementById('stairTotalRise').value;
-            const totalRiseMm = unit === 'mm' ? (parseFloat(riseStr) || 0) : parseInputToMm(riseStr, 'ft_in');
-            
-            const maxRise = unit === 'mm' ? 180 : 7.75 * 25.4;
-            const defaultRun = unit === 'mm' ? 280 : 11;
+        function markRunModified() {
+            userModifiedRun = true;
+            calculateStairs();
+        }
 
-            if (totalRiseMm > 0) {
-                const minRisers = Math.ceil(totalRiseMm / maxRise);
-                document.getElementById('stairTargetRisersCount').value = minRisers;
-                document.getElementById('stairRun').value = defaultRun;
-            } else {
-                document.getElementById('stairTargetRisersCount').value = "0";
-                document.getElementById('stairRun').value = "0";
-            }
+        function markTargetRisersModified() {
+            userModifiedTargetRisers = true;
             calculateStairs();
         }
 
         function calculateStairs() {
             const unit = document.getElementById('stairUnit').value;
             const riseStr = document.getElementById('stairTotalRise').value;
-            const totalRiseMm = unit === 'mm' ? (parseFloat(riseStr) || 0) : parseInputToMm(riseStr, 'ft_in');
+            const totalRiseMm = parseStairRiseInput(riseStr, unit);
             
-            const targetCountInput = parseInt(document.getElementById('stairTargetRisersCount').value) || 0;
-            const runInputVal = parseFloat(document.getElementById('stairRun').value) || 0;
-
-            const runMm = unit === 'mm' ? runInputVal : runInputVal * 25.4;
-
-            const maxRiseLimit = unit === 'mm' ? 180 : 7.75; 
-            const minRiseLimit = unit === 'mm' ? 125 : 4.92;
-            const minRunLimit = unit === 'mm' ? 280 : 10;
-            const maxRunLimit = unit === 'mm' ? 355 : 14;
-            const maxFlightHeight = unit === 'mm' ? 3700 : 145.6;
-
             const totalRiseInches = totalRiseMm / 25.4;
-            const runInches = runMm / 25.4;
+            const comparisonRise = unit === 'mm' ? totalRiseMm : totalRiseInches;
+            
+            const maxR = unit === 'mm' ? 180 : (180 / 25.4);
+            const minR = unit === 'mm' ? 125 : (125 / 25.4);
 
-            const comparisonRiseLimit = unit === 'mm' ? totalRiseMm : totalRiseInches;
-            const maxR = unit === 'mm' ? 180 : 7.75;
-            const minR = unit === 'mm' ? 125 : 4.92;
+            const defaultRun = unit === 'mm' ? 280 : 11;
+            const currentRunVal = parseFloat(document.getElementById('stairRun').value) || 0;
+            if (currentRunVal <= 0 && !userModifiedRun) {
+                document.getElementById('stairRun').value = defaultRun;
+            }
+            const activeRunVal = parseFloat(document.getElementById('stairRun').value) || defaultRun;
 
-            if (comparisonRiseLimit <= 0) {
+            if (comparisonRise <= 0) {
                 document.getElementById('optRisers').innerText = "0";
                 document.getElementById('optRise').innerText = unit === 'mm' ? "0 mm" : "0\"";
-                document.getElementById('optRun').innerText = unit === 'mm' ? "0 mm" : "0\"";
+                document.getElementById('optRun').innerText = unit === 'mm' ? "280 mm" : "11\"";
+                document.getElementById('optTotalRun').innerText = unit === 'mm' ? "0 mm" : "0\"";
                 document.getElementById('optLandings').innerText = "0 Landings";
                 document.getElementById('optLandings').className = "font-mono text-emerald-600 font-bold";
                 
@@ -1656,24 +1699,42 @@
                 return;
             }
 
-            const minRisers = Math.ceil(comparisonRiseLimit / maxR);
-            const optimizedRise = comparisonRiseLimit / minRisers;
+            const minRisers = Math.ceil(comparisonRise / maxR);
+            const optimizedRise = comparisonRise / minRisers;
             
+            const targetInputElem = document.getElementById('stairTargetRisersCount');
+            if (!userModifiedTargetRisers || parseInt(targetInputElem.value) <= 0) {
+                targetInputElem.value = minRisers;
+            }
+            const customRisers = parseInt(targetInputElem.value) || minRisers;
+
+            // --- OUTPUT 1 CALCULATIONS (Fixed to use default run and stay independent of custom run edits) ---
+            const defaultRunVal = unit === 'mm' ? 280 : 11;
+            let optTotalRunVal = (minRisers - 1) * (unit === 'mm' ? defaultRunVal : (defaultRunVal * 25.4));
+
             document.getElementById('optRisers').innerText = minRisers;
             
             if (unit === 'mm') {
-                document.getElementById('optRise').innerText = formatNumber(optimizedRise * 25.4) + ' mm';
+                document.getElementById('optRise').innerText = formatNumber(optimizedRise) + ' mm';
                 document.getElementById('optRun').innerText = '280 mm';
+                document.getElementById('optTotalRun').innerText = formatNumber(optTotalRunVal) + ' mm';
             } else {
                 let fracStr = formatInchesToFrac(optimizedRise);
-                document.getElementById('optRise').innerText = `${fracStr} (${formatNumber(optimizedRise)}")`;
-                document.getElementById('optRun').innerText = '11"';
+                document.getElementById('optRise').innerText = `${fracStr} (${formatNumber(optimizedRise)})`;
+                document.getElementById('optRun').innerText = `${defaultRunVal}"`;
+
+                let optTotalInches = optTotalRunVal / 25.4;
+                let optTotalFt = Math.floor(optTotalInches / 12);
+                let optTotalRemIn = optTotalInches % 12;
+                let optTotalFtInStr = optTotalFt > 0 ? `${optTotalFt}'-${formatInchesToFrac(optTotalRemIn)}` : formatInchesToFrac(optTotalRemIn);
+                
+                document.getElementById('optTotalRun').innerText = `${optTotalFtInStr} (${formatNumber(optTotalInches)})`;
             }
 
             let requiredLandings = 0;
             let flightHeightLimit = unit === 'mm' ? 3700 : 145.6;
-            if (comparisonRiseLimit > flightHeightLimit) {
-                let flights = Math.ceil(comparisonRiseLimit / flightHeightLimit);
+            if (comparisonRise > flightHeightLimit) {
+                let flights = Math.ceil(comparisonRise / flightHeightLimit);
                 requiredLandings = flights - 1;
             }
             
@@ -1686,11 +1747,9 @@
                 landingElem.className = "font-mono text-emerald-600 font-bold";
             }
 
-            let customRisers = targetCountInput > 0 ? targetCountInput : minRisers;
-            if (customRisers < 1) customRisers = 1;
-
-            const actualRise = comparisonRiseLimit / customRisers;
-            const totalRunVal = (customRisers - 1) * (unit === 'mm' ? runMm : runInches);
+            // --- OUTPUT 2 CALCULATIONS (Custom Target Layout Analysis) ---
+            const actualRise = comparisonRise / customRisers;
+            const totalRunVal = (customRisers - 1) * (unit === 'mm' ? activeRunVal : (activeRunVal * 25.4));
 
             document.getElementById('customRisers').innerText = customRisers;
             
@@ -1699,28 +1758,28 @@
                 document.getElementById('customTotalRun').innerText = formatNumber(totalRunVal) + ' mm';
             } else {
                 let fracStrCust = formatInchesToFrac(actualRise);
-                document.getElementById('customRise').innerText = `${fracStrCust} (${formatNumber(actualRise)}")`;
+                document.getElementById('customRise').innerText = `${fracStrCust} (${formatNumber(actualRise)})`;
                 
-                let totalRunFrac = formatInchesToFrac(totalRunVal);
-                let totalRunFt = Math.floor(totalRunVal / 12);
-                let totalRunRemIn = totalRunVal % 12;
+                let totalRunInches = totalRunVal / 25.4; 
+                let totalRunFt = Math.floor(totalRunInches / 12);
+                let totalRunRemIn = totalRunInches % 12;
                 let totalRunFtInStr = totalRunFt > 0 ? `${totalRunFt}'-${formatInchesToFrac(totalRunRemIn)}` : formatInchesToFrac(totalRunRemIn);
-                document.getElementById('customTotalRun').innerText = `${totalRunFtInStr} (${formatNumber(totalRunVal)}")`;
+                
+                document.getElementById('customTotalRun').innerText = `${totalRunFtInStr} (${formatNumber(totalRunInches)})`;
             }
 
             const box = document.getElementById('stairComplianceBox');
             const text = document.getElementById('stairComplianceText');
 
             let errors = [];
-            let checkRunVal = unit === 'mm' ? runMm : runInches;
-            let minRunL = unit === 'mm' ? 280 : 10;
+            let minRunL = unit === 'mm' ? 280 : 11;
             let maxRunL = unit === 'mm' ? 355 : 14;
 
             if (actualRise < minR || actualRise > maxR) {
-                errors.push(`Actual Rise (${unit === 'mm' ? formatNumber(actualRise) + 'mm' : formatInchesToFrac(actualRise)}) exceeds limits (${minR}-${maxR}${unit === 'mm' ? 'mm' : '"'}).`);
+                errors.push(`Actual Rise (${unit === 'mm' ? formatNumber(actualRise) + 'mm' : formatInchesToFrac(actualRise)}) exceeds limits.`);
             }
-            if (checkRunVal > 0 && (checkRunVal < minRunL || checkRunVal > maxRunL)) {
-                errors.push(`Tread Run (${unit === 'mm' ? checkRunVal + 'mm' : formatInchesToFrac(checkRunVal)}) is outside limits (${minRunL}-${maxRunL}${unit === 'mm' ? 'mm' : '"'}).`);
+            if (activeRunVal > 0 && (activeRunVal < minRunL || activeRunVal > maxRunL)) {
+                errors.push(`Tread Run (${unit === 'mm' ? activeRunVal + 'mm' : activeRunVal + '"'}) is outside limits.`);
             }
 
             if (errors.length === 0) {
@@ -1743,7 +1802,7 @@
                 const ratio = parseFloat(val) || 0;
                 if (ratio > 0) {
                     const percent = (1 / ratio) * 100;
-                    document.getElementById('rampPercent').value = formatNumber(percent);
+                    document.getElementById('rampPercent').value = formatNumber3(percent);
                 } else {
                     document.getElementById('rampPercent').value = 0;
                 }
@@ -1759,7 +1818,7 @@
                 const percent = parseFloat(val) || 0;
                 if (percent > 0) {
                     const ratio = 100 / percent;
-                    document.getElementById('rampRatio').value = formatNumber(ratio);
+                    document.getElementById('rampRatio').value = formatNumber3(ratio);
                 } else {
                     document.getElementById('rampRatio').value = 0;
                 }
@@ -1773,7 +1832,7 @@
             const ratio = ratioStr === "" ? 0 : (parseFloat(ratioStr) || 0);
 
             const run = rise * ratio;
-            document.getElementById('rampRunResult').innerText = `${formatNumber(run)} mm (${formatNumber(run/1000)} m)`;
+            document.getElementById('rampRunResult').innerText = `${formatNumber3(run)} mm (${formatNumber3(run/1000)} m)`;
 
             updateRampLandingNotice(ratio, run, 'rampLandingNoticeRise');
         }
@@ -1796,8 +1855,8 @@
             const ratio = run / rise;
             const percent = (rise / run) * 100;
 
-            ratioEl.innerText = `1:${formatNumber(ratio)}`;
-            percentEl.innerText = `${formatNumber(percent)}%`;
+            ratioEl.innerText = `1:${formatNumber3(ratio)}`;
+            percentEl.innerText = `${formatNumber3(percent)}%`;
 
             updateRampLandingNotice(ratio, run, 'rampCheckNotice');
         }
@@ -1859,8 +1918,8 @@
             const diffM = diffMm / 1000;
             const diffFtIn = formatMmToFtInFracOnly(diffMm);
 
-            document.getElementById('spotDiffM').innerText = `${formatNumber(diffM)} m`;
-            document.getElementById('spotDiffMm').innerText = `${formatNumber(diffMm)} mm`;
+            document.getElementById('spotDiffM').innerText = `${formatNumber3(diffM)} m`;
+            document.getElementById('spotDiffMm').innerText = `${formatNumber3(diffMm)} mm`;
             document.getElementById('spotDiffFtIn').innerText = diffFtIn;
 
             const distVal = parseFloat(document.getElementById('spotDistVal').value) || 0;
@@ -1878,10 +1937,10 @@
                 const slopePct = (diffMm / distMm) * 100;
                 const ratioVal = distMm / diffMm;
 
-                slopePctEl.innerText = formatNumber(slopePct) + '%';
-                slopeRatioEl.innerText = `1:${formatNumber(ratioVal)}`;
+                slopePctEl.innerText = formatNumber3(slopePct) + '%';
+                slopeRatioEl.innerText = `1:${formatNumber3(ratioVal)}`;
 
-                document.getElementById('spotSlopeInput').value = formatNumber(slopePct);
+                document.getElementById('spotSlopeInput').value = formatNumber3(slopePct);
                 document.getElementById('spotSlopeType').value = 'pct';
             } else {
                 slopePctEl.innerText = "0%";
@@ -1921,20 +1980,20 @@
             const mm2 = mm1 + diffMm;
 
             let formattedElev2 = "";
-            if (globalUnit === 'mm') formattedElev2 = formatNumber(mm2);
-            else if (globalUnit === 'm') formattedElev2 = formatNumber(mm2 / 1000);
-            else if (globalUnit === 'ft') formattedElev2 = formatNumber(mm2 / 304.8);
+            if (globalUnit === 'mm') formattedElev2 = formatNumber3(mm2);
+            else if (globalUnit === 'm') formattedElev2 = formatNumber3(mm2 / 1000);
+            else if (globalUnit === 'ft') formattedElev2 = formatNumber3(mm2 / 304.8);
             else if (globalUnit === 'ft_in') formattedElev2 = formatMmToFtInFracOnly(mm2);
 
             document.getElementById('spotElev2').value = formattedElev2;
 
             const diffM = diffMm / 1000;
-            document.getElementById('spotDiffM').innerText = `${formatNumber(diffM)} m`;
-            document.getElementById('spotDiffMm').innerText = `${formatNumber(diffMm)} mm`;
+            document.getElementById('spotDiffM').innerText = `${formatNumber3(diffM)} m`;
+            document.getElementById('spotDiffMm').innerText = `${formatNumber3(diffMm)} mm`;
             document.getElementById('spotDiffFtIn').innerText = formatMmToFtInFracOnly(diffMm);
 
-            document.getElementById('spotSlopePct').innerText = formatNumber(slopePct) + '%';
-            document.getElementById('spotSlopeRatio').innerText = ratioVal > 0 ? `1:${formatNumber(ratioVal)}` : "N/A";
+            document.getElementById('spotSlopePct').innerText = formatNumber3(slopePct) + '%';
+            document.getElementById('spotSlopeRatio').innerText = ratioVal > 0 ? `1:${formatNumber3(ratioVal)}` : "N/A";
 
             isCalculatingFromSlope = false;
         }
@@ -2111,15 +2170,23 @@
 
             document.getElementById('resPerimeterMm').innerText = formatNumber(perimeterMm) + ' mm';
             document.getElementById('resPerimeterM').innerText = formatNumber(perimeterM) + ' m';
-            document.getElementById('resMDRatio').innerText = formatNumber(mdRatio);
+            document.getElementById('resMDRation').innerText = formatNumber(mdRatio);
         }
+
+        // Attach input listeners
+        document.getElementById('stairRun').addEventListener('input', markRunModified);
+        document.getElementById('stairTotalRise').addEventListener('input', () => {
+            userModifiedTargetRisers = false; // Reset lock when height changes so it auto-syncs
+            calculateStairs();
+        });
+        document.getElementById('stairTargetRisersCount').addEventListener('input', markTargetRisersModified);
 
         // Initialize all modules on load
         runConversion();
         runAreaConversion();
         calculateSpace();
         calculateCustomScale();
-        onTotalRiseInput();
+        calculateStairs();
         onRampRatioInput();
         calculateSlopeFromDimensions();
         calculateSpotElevations();
