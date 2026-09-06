@@ -266,13 +266,22 @@
                 </summary>
 
                 <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Floor-to-Floor Height (mm)</label>
-                        <input type="number" id="stairTotalRise" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="onTotalRiseInput()">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="w-full md:w-3/4">
+                            <label id="stairRiseLabel" class="block text-xs font-medium text-slate-600 mb-1">Floor-to-Floor Height (mm)</label>
+                            <input type="text" id="stairTotalRise" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="onTotalRiseInput()">
+                        </div>
+                        <div class="w-full md:w-1/4">
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Unit Selection</label>
+                            <select id="stairUnit" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="onStairUnitChange()">
+                                <option value="mm" selected>Millimetres (mm)</option>
+                                <option value="in">Inches (in)</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="bg-slate-50 p-4 rounded-lg border border-sky-100 space-y-3">
-                        <div class="text-xs font-semibold text-sky-600 uppercase tracking-wider">Output 1: Minimum Risers Solution (Max 180mm Rise)</div>
+                        <div id="optRiseHeader" class="text-xs font-semibold text-sky-600 uppercase tracking-wider">Output 1: Minimum Risers Solution (Max 180mm Rise)</div>
                         <div class="grid grid-cols-3 gap-2 text-center pt-1">
                             <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRisers')">
                                 <span class="block text-[10px] text-slate-400">Risers Count <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
@@ -280,7 +289,7 @@
                             </div>
                             <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRise')">
                                 <span class="block text-[10px] text-slate-400">Rise per Step <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                <span id="optRise" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
+                                <span id="optRise" class="font-mono text-slate-800 font-bold text-sm">0 mm</span>
                             </div>
                             <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRun')">
                                 <span class="block text-[10px] text-slate-400">Default Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
@@ -288,7 +297,7 @@
                             </div>
                         </div>
                         <div id="landingNoticeContainer" class="bg-white p-2.5 rounded border border-slate-200 flex justify-between items-center text-xs shadow-2xs">
-                            <span class="text-slate-500">Required Landings (Flight &gt; 3.7m):</span>
+                            <span class="text-slate-500">Required Landings:</span>
                             <span id="optLandings" class="font-mono text-amber-600 font-bold">0 Landings</span>
                         </div>
                     </div>
@@ -302,8 +311,8 @@
                                 <span class="text-[10px] text-slate-400 mt-0.5 block">Leave 0 to use minimum risers</span>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Tread Run / Depth (mm)</label>
-                                <input type="number" id="stairRun" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateStairs()">
+                                <label id="stairRunLabel" class="block text-xs font-medium text-slate-600 mb-1">Tread Run / Depth (mm)</label>
+                                <input type="number" id="stairRun" value="0" step="any" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateStairs()">
                             </div>
                         </div>
 
@@ -316,7 +325,7 @@
                                 </div>
                                 <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customRise')">
                                     <span class="block text-[10px] text-slate-400">Actual Rise <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                    <span id="customRise" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
+                                    <span id="customRise" class="font-mono text-slate-800 font-bold text-sm">0 mm</span>
                                 </div>
                                 <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customTotalRun')">
                                     <span class="block text-[10px] text-slate-400">Total Run (Go) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
@@ -1380,6 +1389,32 @@
             return `${feet}'-${fractionalPartStr}\"`;
         }
 
+        function formatInchesToFrac(totalInches) {
+            if (totalInches <= 0) return '0"';
+            let wholeInches = Math.floor(totalInches);
+            let fractionalInches = totalInches - wholeInches;
+            
+            let eighths = Math.round(fractionalInches * 8);
+            if (eighths === 8) {
+                wholeInches += 1;
+                eighths = 0;
+            }
+
+            let eighthsStr = "";
+            if (eighths === 1) eighthsStr = "1/8";
+            else if (eighths === 2) eighthsStr = "1/4";
+            else if (eighths === 3) eighthsStr = "3/8";
+            else if (eighths === 4) eighthsStr = "1/2";
+            else if (eighths === 5) eighthsStr = "5/8";
+            else if (eighths === 6) eighthsStr = "3/4";
+            else if (eighths === 7) eighthsStr = "7/8";
+
+            if (wholeInches === 0 && eighthsStr === "") return '0"';
+            if (wholeInches === 0) return `${eighthsStr}"`;
+            if (eighthsStr === "") return `${wholeInches}"`;
+            return `${wholeInches}-${eighthsStr}"`;
+        }
+
         function formatMmToFtInDecOnly(mm) {
             if (mm === 0) return "0'-0\"";
             let totalInches = mm / 25.4;
@@ -1486,18 +1521,6 @@
         }
 
         // --- SCALE CONVERTER ENGINE ---
-        function parseFraction(str) {
-            str = str.toString().trim();
-            if (!str) return 0;
-            if (str.includes('/')) {
-                let parts = str.split('/');
-                let num = parseFloat(parts[0]);
-                let den = parseFloat(parts[1]);
-                if (den && den !== 0) return num / den;
-            }
-            return parseFloat(str) || 0;
-        }
-
         function applyScalePreset() {
             const preset = document.getElementById('scalePreset').value;
             const presets = {
@@ -1539,12 +1562,51 @@
         }
 
         // --- DUAL STAIR CALCULATOR ---
+        function onStairUnitChange() {
+            const unit = document.getElementById('stairUnit').value;
+            const riseInput = document.getElementById('stairTotalRise');
+            const runInput = document.getElementById('stairRun');
+            
+            let currentRiseStr = riseInput.value;
+            let currentRunVal = parseFloat(runInput.value) || 0;
+
+            document.getElementById('stairRiseLabel').innerText = unit === 'mm' ? 'Floor-to-Floor Height (mm)' : 'Floor-to-Floor Height (e.g. 9\'-6" or 114)';
+            document.getElementById('stairRunLabel').innerText = unit === 'mm' ? 'Tread Run / Depth (mm)' : 'Tread Run / Depth (inches)';
+            
+            document.getElementById('optRiseHeader').innerText = unit === 'mm' 
+                ? 'Output 1: Minimum Risers Solution (Max 180mm Rise)' 
+                : 'Output 1: Minimum Risers Solution (Max 7.75" Rise)';
+
+            // Convert existing values when switching units
+            if (unit === 'in') {
+                let mmRise = parseInputToMm(currentRiseStr, 'mm');
+                riseInput.value = mmRise > 0 ? formatNumber(mmRise / 25.4) : "0";
+                
+                let mmRun = currentRunVal > 0 ? currentRunVal : 280;
+                runInput.value = formatNumber(mmRun / 25.4);
+            } else {
+                let mmRise = parseInputToMm(currentRiseStr, 'ft_in'); // fallback parse
+                if (mmRise === 0) mmRise = (parseFloat(currentRiseStr) || 0) * 25.4;
+                riseInput.value = mmRise > 0 ? formatNumber(mmRise) : "0";
+                
+                let inchRun = currentRunVal > 0 ? currentRunVal : 11;
+                runInput.value = formatNumber(inchRun * 25.4);
+            }
+            onTotalRiseInput();
+        }
+
         function onTotalRiseInput() {
-            const totalRise = parseFloat(document.getElementById('stairTotalRise').value) || 0;
-            if (totalRise > 0) {
-                const minRisers = Math.ceil(totalRise / 180);
+            const unit = document.getElementById('stairUnit').value;
+            const riseStr = document.getElementById('stairTotalRise').value;
+            const totalRiseMm = unit === 'mm' ? (parseFloat(riseStr) || 0) : parseInputToMm(riseStr, 'ft_in');
+            
+            const maxRise = unit === 'mm' ? 180 : 7.75 * 25.4;
+            const defaultRun = unit === 'mm' ? 280 : 11;
+
+            if (totalRiseMm > 0) {
+                const minRisers = Math.ceil(totalRiseMm / maxRise);
                 document.getElementById('stairTargetRisersCount').value = minRisers;
-                document.getElementById('stairRun').value = "280";
+                document.getElementById('stairRun').value = defaultRun;
             } else {
                 document.getElementById('stairTargetRisersCount').value = "0";
                 document.getElementById('stairRun').value = "0";
@@ -1553,19 +1615,38 @@
         }
 
         function calculateStairs() {
-            const totalRise = parseFloat(document.getElementById('stairTotalRise').value) || 0;
+            const unit = document.getElementById('stairUnit').value;
+            const riseStr = document.getElementById('stairTotalRise').value;
+            const totalRiseMm = unit === 'mm' ? (parseFloat(riseStr) || 0) : parseInputToMm(riseStr, 'ft_in');
+            
             const targetCountInput = parseInt(document.getElementById('stairTargetRisersCount').value) || 0;
-            const run = parseFloat(document.getElementById('stairRun').value) || 0;
+            const runInputVal = parseFloat(document.getElementById('stairRun').value) || 0;
 
-            if (totalRise <= 0) {
+            const runMm = unit === 'mm' ? runInputVal : runInputVal * 25.4;
+
+            const maxRiseLimit = unit === 'mm' ? 180 : 7.75; 
+            const minRiseLimit = unit === 'mm' ? 125 : 4.92;
+            const minRunLimit = unit === 'mm' ? 280 : 10;
+            const maxRunLimit = unit === 'mm' ? 355 : 14;
+            const maxFlightHeight = unit === 'mm' ? 3700 : 145.6;
+
+            const totalRiseInches = totalRiseMm / 25.4;
+            const runInches = runMm / 25.4;
+
+            const comparisonRiseLimit = unit === 'mm' ? totalRiseMm : totalRiseInches;
+            const maxR = unit === 'mm' ? 180 : 7.75;
+            const minR = unit === 'mm' ? 125 : 4.92;
+
+            if (comparisonRiseLimit <= 0) {
                 document.getElementById('optRisers').innerText = "0";
-                document.getElementById('optRise').innerText = "0 mm";
+                document.getElementById('optRise').innerText = unit === 'mm' ? "0 mm" : "0\"";
+                document.getElementById('optRun').innerText = unit === 'mm' ? "0 mm" : "0\"";
                 document.getElementById('optLandings').innerText = "0 Landings";
                 document.getElementById('optLandings').className = "font-mono text-emerald-600 font-bold";
                 
                 document.getElementById('customRisers').innerText = "0";
-                document.getElementById('customRise').innerText = "0 mm";
-                document.getElementById('customTotalRun').innerText = "0 mm";
+                document.getElementById('customRise').innerText = unit === 'mm' ? "0 mm" : "0\"";
+                document.getElementById('customTotalRun').innerText = unit === 'mm' ? "0 mm" : "0\"";
                 
                 const box = document.getElementById('stairComplianceBox');
                 const text = document.getElementById('stairComplianceText');
@@ -1575,17 +1656,24 @@
                 return;
             }
 
-            const minRisers = Math.ceil(totalRise / 180);
-            const optimizedRise = totalRise / minRisers;
+            const minRisers = Math.ceil(comparisonRiseLimit / maxR);
+            const optimizedRise = comparisonRiseLimit / minRisers;
             
             document.getElementById('optRisers').innerText = minRisers;
-            document.getElementById('optRise').innerText = formatNumber(optimizedRise) + ' mm';
-            document.getElementById('optRun').innerText = '280 mm';
+            
+            if (unit === 'mm') {
+                document.getElementById('optRise').innerText = formatNumber(optimizedRise * 25.4) + ' mm';
+                document.getElementById('optRun').innerText = '280 mm';
+            } else {
+                let fracStr = formatInchesToFrac(optimizedRise);
+                document.getElementById('optRise').innerText = `${fracStr} (${formatNumber(optimizedRise)}")`;
+                document.getElementById('optRun').innerText = '11"';
+            }
 
-            const maxFlightHeight = 3700;
             let requiredLandings = 0;
-            if (totalRise > maxFlightHeight) {
-                let flights = Math.ceil(totalRise / maxFlightHeight);
+            let flightHeightLimit = unit === 'mm' ? 3700 : 145.6;
+            if (comparisonRiseLimit > flightHeightLimit) {
+                let flights = Math.ceil(comparisonRiseLimit / flightHeightLimit);
                 requiredLandings = flights - 1;
             }
             
@@ -1601,22 +1689,38 @@
             let customRisers = targetCountInput > 0 ? targetCountInput : minRisers;
             if (customRisers < 1) customRisers = 1;
 
-            const actualRise = totalRise / customRisers;
-            const totalRun = (customRisers - 1) * run;
+            const actualRise = comparisonRiseLimit / customRisers;
+            const totalRunVal = (customRisers - 1) * (unit === 'mm' ? runMm : runInches);
 
             document.getElementById('customRisers').innerText = customRisers;
-            document.getElementById('customRise').innerText = formatNumber(actualRise) + ' mm';
-            document.getElementById('customTotalRun').innerText = formatNumber(totalRun) + ' mm';
+            
+            if (unit === 'mm') {
+                document.getElementById('customRise').innerText = formatNumber(actualRise) + ' mm';
+                document.getElementById('customTotalRun').innerText = formatNumber(totalRunVal) + ' mm';
+            } else {
+                let fracStrCust = formatInchesToFrac(actualRise);
+                document.getElementById('customRise').innerText = `${fracStrCust} (${formatNumber(actualRise)}")`;
+                
+                let totalRunFrac = formatInchesToFrac(totalRunVal);
+                let totalRunFt = Math.floor(totalRunVal / 12);
+                let totalRunRemIn = totalRunVal % 12;
+                let totalRunFtInStr = totalRunFt > 0 ? `${totalRunFt}'-${formatInchesToFrac(totalRunRemIn)}` : formatInchesToFrac(totalRunRemIn);
+                document.getElementById('customTotalRun').innerText = `${totalRunFtInStr} (${formatNumber(totalRunVal)}")`;
+            }
 
             const box = document.getElementById('stairComplianceBox');
             const text = document.getElementById('stairComplianceText');
 
             let errors = [];
-            if (actualRise < 125 || actualRise > 180) {
-                errors.push(`Actual Rise (${formatNumber(actualRise)} mm) exceeds limits (125-180mm).`);
+            let checkRunVal = unit === 'mm' ? runMm : runInches;
+            let minRunL = unit === 'mm' ? 280 : 10;
+            let maxRunL = unit === 'mm' ? 355 : 14;
+
+            if (actualRise < minR || actualRise > maxR) {
+                errors.push(`Actual Rise (${unit === 'mm' ? formatNumber(actualRise) + 'mm' : formatInchesToFrac(actualRise)}) exceeds limits (${minR}-${maxR}${unit === 'mm' ? 'mm' : '"'}).`);
             }
-            if (run > 0 && (run < 280 || run > 355)) {
-                errors.push(`Tread Run (${run} mm) is outside limits (280-355mm).`);
+            if (checkRunVal > 0 && (checkRunVal < minRunL || checkRunVal > maxRunL)) {
+                errors.push(`Tread Run (${unit === 'mm' ? checkRunVal + 'mm' : formatInchesToFrac(checkRunVal)}) is outside limits (${minRunL}-${maxRunL}${unit === 'mm' ? 'mm' : '"'}).`);
             }
 
             if (errors.length === 0) {
@@ -2015,7 +2119,7 @@
         runAreaConversion();
         calculateSpace();
         calculateCustomScale();
-        calculateStairs();
+        onTotalRiseInput();
         onRampRatioInput();
         calculateSlopeFromDimensions();
         calculateSpotElevations();
