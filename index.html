@@ -677,7 +677,7 @@
                         </div>
                     </div>
 
-                    <!-- M/D Results Grid -->
+<!-- M/D Results Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resPerimeterMm')">
                             <span class="block text-xs text-slate-500 mb-1">Heated Perimeter D (mm) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
@@ -687,9 +687,9 @@
                             <span class="block text-xs text-slate-500 mb-1">Heated Perimeter D (m) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
                             <span id="resPerimeterM" class="font-mono text-sky-600 text-lg font-bold">0 m</span>
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resMDRatio')">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-emerald-200 text-center shadow-2xs copyable" onclick="copyBoxValue(this, 'resMDRation')">
                             <span class="block text-xs text-slate-500 mb-1">M / D Ratio (kg/m²) <span class="text-[10px] text-sky-600 lowercase">(copy)</span></span>
-                            <span id="resMDRatio" class="font-mono text-emerald-600 text-xl font-bold">0</span>
+                            <span id="resMDRation" class="font-mono text-emerald-600 text-xl font-bold">0</span>
                         </div>
                     </div>
                 </div>
@@ -1303,11 +1303,11 @@
             const sheetKey = shapeToSheet[shape];
             const designation = document.getElementById('mdSectionSize').value;
 
-            if (sheetKey && designation && steelDatabase[sheetKey][designation]) {
+            if (sheetKey && designation && steelDatabase[sheetKey] && steelDatabase[sheetKey][designation]) {
                 const data = steelDatabase[sheetKey][designation];
                 document.getElementById('mdMass').value = data.mass;
-                document.getElementById('mdDimH').value = data.height;
-                document.getElementById('mdDimB').value = data.width;
+                document.getElementById('mdDimH').value = data.height || 0;
+                document.getElementById('mdDimB').value = data.width || 0;
                 calculateMD();
             }
         }
@@ -2137,28 +2137,45 @@
         }
 
         // --- MODULE 6: M/D RATIO CALCULATOR (OBC 2.6.4) ---
-        function calculateMD() {
+        function onSectionSizeSelect() {
             const shape = document.getElementById('mdShape').value;
-            const massM = parseFloat(document.getElementById('mdMass').value) || 0;
-            const dimB = parseFloat(document.getElementById('mdDimB').value) || 0;
-            const dimH = parseFloat(document.getElementById('mdDimH').value) || 0;
+            const sheetKey = shapeToSheet[shape];
+            const designation = document.getElementById('mdSectionSize').value;
+
+            if (sheetKey && designation && steelDatabase[sheetKey] && steelDatabase[sheetKey][designation]) {
+                const data = steelDatabase[sheetKey][designation];
+                document.getElementById('mdMass').value = data.mass;
+                document.getElementById('mdDimH').value = data.height || 0;
+                document.getElementById('mdDimB').value = data.width || 0;
+                calculateMD();
+            }
+        }
+
+function calculateMD() {
+            const shapeElement = document.getElementById('mdShape');
+            const massElement = document.getElementById('mdMass');
+            const bElement = document.getElementById('mdDimB');
+            const hElement = document.getElementById('mdDimH');
+
+            if (!shapeElement || !massElement || !bElement || !hElement) return;
+
+            const shape = shapeElement.value;
+            const massM = parseFloat(massElement.value) || 0;
+            const dimB = parseFloat(bElement.value) || 0;
+            const dimH = parseFloat(hElement.value) || 0;
 
             const wrapperH = document.getElementById('wrapperDimH');
             const labelB = document.getElementById('labelB');
 
             let perimeterMm = 0;
 
-            if (shape === 'Wide Flange Column') {
-                wrapperH.style.display = "block";
-                labelB.innerText = "Flange Width B (mm)";
-                perimeterMm = 2 * (dimB + dimH);
-            } else if (shape === 'HSS Rectangular') {
-                wrapperH.style.display = "block";
-                labelB.innerText = "Flange Width B (mm)";
+            if (shape === 'Wide Flange Column' || shape === 'HSS Rectangular') {
+                if (wrapperH) wrapperH.style.display = "block";
+                if (labelB) labelB.innerText = "Flange Width B (mm)";
                 perimeterMm = 2 * (dimB + dimH);
             } else if (shape === 'HSS Round') {
-                wrapperH.style.display = "none";
-                labelB.innerText = "Outer Diameter B (mm)";
+                if (wrapperH) wrapperH.style.display = "none";
+                if (labelB) labelB.innerText = "Outer Diameter B (mm)";
                 perimeterMm = Math.PI * dimB;
             }
 
@@ -2168,9 +2185,14 @@
                 mdRatio = massM / perimeterM;
             }
 
-            document.getElementById('resPerimeterMm').innerText = formatNumber(perimeterMm) + ' mm';
-            document.getElementById('resPerimeterM').innerText = formatNumber(perimeterM) + ' m';
-            document.getElementById('resMDRation').innerText = formatNumber(mdRatio);
+            // Safe element updates
+            const pMmEl = document.getElementById('resPerimeterMm');
+            const pMEl = document.getElementById('resPerimeterM');
+            const mdRatEl = document.getElementById('resMDRation');
+
+            if (pMmEl) pMmEl.innerText = formatNumber(perimeterMm) + ' mm';
+            if (pMEl) pMEl.innerText = formatNumber(perimeterM) + ' m';
+            if (mdRatEl) mdRatEl.innerText = formatNumber(mdRatio);
         }
 
         // Attach input listeners
