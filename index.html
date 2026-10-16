@@ -255,106 +255,115 @@
                 </div>
             </details>
 
-            <!-- MODULE 3: DUAL STAIR GEOMETRY ANALYZER -->
-            <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
-                <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                        Stair Geometry Analyzer
-                    </span>
-                    <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </summary>
+<!-- MODULE 3: DUAL STAIR GEOMETRY ANALYZER -->
+<details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group" open>
+    <summary class="p-6 cursor-pointer select-none flex justify-between items-center font-semibold text-lg text-sky-600 hover:text-sky-700 transition-colors">
+        <span class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            Stair Geometry Analyzer
+        </span>
+        <svg class="w-5 h-5 transform transition-transform group-open:rotate-180 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+    </summary>
 
-                <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="w-full md:w-3/4">
-                            <label id="stairRiseLabel" class="block text-xs font-medium text-slate-600 mb-1">Floor-to-Floor Height (mm)</label>
-                            <input type="text" id="stairTotalRise" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" oninput="calculateStairs()">
-                        </div>
-                        <div class="w-full md:w-1/4">
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Unit Selection</label>
-                            <select id="stairUnit" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="onStairUnitChange()">
-                                <option value="mm" selected>Millimetres (mm)</option>
-                                <option value="in">Inches (in)</option>
-                            </select>
-                        </div>
+    <div class="px-6 pb-6 space-y-6 border-t border-slate-100 pt-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Building Code Standard -->
+            <div class="space-y-1">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Building Code Scope</label>
+                <select id="stairCodeStandard" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="onStairCodeChange()">
+                    <option value="part3" selected>OBC Part 3 Building</option>
+                    <option value="part9">OBC Part 9 Building</option>
+                </select>
+            </div>
+
+            <!-- Stair Sub-Type (Conditional for Part 9) -->
+            <div id="stairSubTypeWrapper" class="space-y-1 hidden">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">OBC Part 9 Stair Type</label>
+		<select id="stairSubType" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 text-sm focus:outline-none focus:border-sky-500" onchange="onStairCodeChange()">
+   			 <option value="private" selected>Private Stairs</option>
+   			 <option value="public">Public Stairs</option>
+		</select>
+            </div>
+
+            <!-- Unit Selection -->
+            <div class="space-y-1">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Unit Selection</label>
+                <select id="stairUnit" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 font-mono text-sm focus:outline-none focus:border-sky-500" onchange="onStairUnitChange()">
+                    <option value="mm" selected>Millimetres (mm)</option>
+                    <option value="in">Inches (in)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="space-y-1">
+            <label id="stairRiseLabel" class="block text-xs font-medium text-slate-600 mb-1">Floor-to-Floor Height (mm)</label>
+            <input type="text" id="stairTotalRise" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500">
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-lg border border-sky-100 space-y-3">
+            <div id="optRiseHeader" class="text-xs font-semibold text-sky-600 uppercase tracking-wider">Output 1: Minimum Risers Solution (Max 180mm Rise)</div>
+            <div id="optGridContainer" class="grid grid-cols-4 gap-2 text-center pt-1">
+                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRisers')">
+                    <span class="block text-[10px] text-slate-400">Risers Count <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                    <span id="optRisers" class="font-mono text-emerald-600 font-bold text-base">0</span>
+                </div>
+                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRise')">
+                    <span class="block text-[10px] text-slate-400">Rise per Step <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                    <span id="optRise" class="font-mono text-slate-800 font-bold text-sm">0 mm</span>
+                </div>
+                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRun')">
+                    <span class="block text-[10px] text-slate-400">Default Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                    <span id="optRun" class="font-mono text-slate-800 font-bold text-base">280 mm</span>
+                </div>
+                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optTotalRun')">
+                    <span class="block text-[10px] text-slate-400">Total Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                    <span id="optTotalRun" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
+                </div>
+            </div>
+
+            <div id="landingNoticeContainer" class="bg-white p-2.5 rounded border border-slate-200 flex justify-between items-center text-xs shadow-2xs">
+                <span class="text-slate-500">Required Landings:</span>
+                <span id="optLandings" class="font-mono text-amber-600 font-bold">0 Landings</span>
+            </div>
+        </div>
+
+        <div class="space-y-4 pt-2 border-t border-slate-100">
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Custom Target Inputs</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Desired Number of Risers</label>
+                    <input type="number" id="stairTargetRisersCount" value="0" step="1" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" placeholder="Auto-calculated if 0" oninput="markTargetRisersModified()">
+                    <span class="text-[10px] text-slate-400 mt-0.5 block">Auto-syncs with Output 1 until changed</span>
+                </div>
+                <div>
+                    <label id="stairRunLabel" class="block text-xs font-medium text-slate-600 mb-1">Tread Run / Depth (mm)</label>
+                    <input type="number" id="stairRun" value="0" step="1" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500">
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
+                <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Output 2: Custom Target Layout Analysis</div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customRisers')">
+                        <span class="block text-[10px] text-slate-400">Result Risers <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                        <span id="customRisers" class="font-mono text-slate-800 font-bold text-base">0</span>
                     </div>
-
-                    <div class="bg-slate-50 p-4 rounded-lg border border-sky-100 space-y-3">
-                        <div id="optRiseHeader" class="text-xs font-semibold text-sky-600 uppercase tracking-wider">Output 1: Minimum Risers Solution (Max 180mm Rise)</div>
-                        <div id="optGridContainer" class="grid grid-cols-4 gap-2 text-center pt-1">
-                            <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRisers')">
-                                <span class="block text-[10px] text-slate-400">Risers Count <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                <span id="optRisers" class="font-mono text-emerald-600 font-bold text-base">0</span>
-                            </div>
-                            <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRise')">
-                                <span class="block text-[10px] text-slate-400">Rise per Step <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                <span id="optRise" class="font-mono text-slate-800 font-bold text-sm">0 mm</span>
-                            </div>
-                            <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optRun')">
-                                <span class="block text-[10px] text-slate-400">Default Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                <span id="optRun" class="font-mono text-slate-800 font-bold text-base">280 mm</span>
-                            </div>
-                            <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'optTotalRun')">
-                                <span class="block text-[10px] text-slate-400">Total Run <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                <span id="optTotalRun" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
-                            </div>
-                        </div>
-
-                        <div id="landingNoticeContainer" class="bg-white p-2.5 rounded border border-slate-200 flex justify-between items-center text-xs shadow-2xs">
-                            <span class="text-slate-500">Required Landings:</span>
-                            <span id="optLandings" class="font-mono text-amber-600 font-bold">0 Landings</span>
-                        </div>
+                    <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customRise')">
+                        <span class="block text-[10px] text-slate-400">Actual Rise <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                        <span id="customRise" class="font-mono text-slate-800 font-bold text-sm">0 mm</span>
                     </div>
-
-                    <div class="space-y-4 pt-2 border-t border-slate-100">
-                        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Custom Target Inputs</div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Desired Number of Risers</label>
-                                <input type="number" id="stairTargetRisersCount" value="0" step="1" min="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500" placeholder="Auto-calculated if 0" oninput="markTargetRisersModified()">
-                                <span class="text-[10px] text-slate-400 mt-0.5 block">Auto-syncs with Output 1 until changed</span>
-                            </div>
-                            <div>
-                                <label id="stairRunLabel" class="block text-xs font-medium text-slate-600 mb-1">Tread Run / Depth (mm)</label>
-                                <input type="number" id="stairRun" value="0" step="1" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 font-mono focus:outline-none focus:border-sky-500">
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
-                            <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Output 2: Custom Target Layout Analysis</div>
-                            <div class="grid grid-cols-3 gap-2 text-center">
-                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customRisers')">
-                                    <span class="block text-[10px] text-slate-400">Result Risers <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                    <span id="customRisers" class="font-mono text-slate-800 font-bold text-base">0</span>
-                                </div>
-                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customRise')">
-                                    <span class="block text-[10px] text-slate-400">Actual Rise <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                    <span id="customRise" class="font-mono text-slate-800 font-bold text-sm">0 mm</span>
-                                </div>
-                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customTotalRun')">
-                                    <span class="block text-[10px] text-slate-400">Total Run (Go) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                    <span id="customTotalRun" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
-                                </div>
-                            </div>
-                            <!-- Extra Output 2 Total Run Containers for Inches Mode -->
-                            <div id="customFtInTotalRunContainer" class="hidden grid grid-cols-2 gap-2 pt-1">
-                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable text-center" onclick="copyBoxValue(this, 'customTotalRunIn')">
-                                    <span class="block text-[10px] text-slate-400">Total Run (Inches) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                    <span id="customTotalRunIn" class="font-mono text-slate-800 font-bold text-sm">0"</span>
-                                </div>
-                                <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable text-center" onclick="copyBoxValue(this, 'customTotalRunFtIn')">
-                                    <span class="block text-[10px] text-slate-400">Total Run (Ft + Frac) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
-                                    <span id="customTotalRunFtIn" class="font-mono text-slate-800 font-bold text-sm">0'-0"</span>
-                                </div>
-                            </div>
-                            <div id="stairComplianceBox" class="p-3 rounded-lg border text-xs transition-colors mt-2">
-                                <span id="stairComplianceText" class="font-medium">Evaluating compliance...</span>
-                            </div>
-                        </div>
+                    <div class="bg-white p-2 rounded border border-slate-200 shadow-2xs copyable" onclick="copyBoxValue(this, 'customTotalRun')">
+                        <span class="block text-[10px] text-slate-400">Total Run (Go) <span class="text-[9px] text-sky-600 lowercase">(copy)</span></span>
+                        <span id="customTotalRun" class="font-mono text-slate-800 font-bold text-base">0 mm</span>
                     </div>
                 </div>
-            </details>
+                <div id="stairComplianceBox" class="p-3 rounded-lg border text-xs transition-colors mt-2">
+                    <span id="stairComplianceText" class="font-medium">Evaluating compliance...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</details>
 
             <!-- MODULE 4: RAMP CALCULATOR -->
             <details class="bg-white border border-slate-200/80 rounded-xl shadow-sm group">
@@ -1594,205 +1603,264 @@
         }
 
         // --- DUAL STAIR CALCULATOR ---
-        let previousStairUnit = 'mm';
-        let userModifiedRun = false;
-        let userModifiedTargetRisers = false;
+let previousStairUnit = 'mm';
+let userModifiedRun = false;
+let userModifiedTargetRisers = false;
 
-        function parseStairRiseInput(valStr, unit) {
-            valStr = valStr.toString().trim();
-            if (!valStr || valStr === "0") return 0;
+function parseStairRiseInput(valStr, unit) {
+    valStr = valStr.toString().trim();
+    if (!valStr || valStr === "0") return 0;
 
-            if (unit === 'mm') {
-                return parseFloat(valStr) || 0;
-            } else {
-                if (valStr.includes("'") || valStr.toLowerCase().includes('ft') || (valStr.includes('-') && !valStr.startsWith('-'))) {
-                    let clean = valStr.toLowerCase().replace(/"/g, '').replace(/'/g, ' ').replace(/ft/g, ' ').replace(/in/g, ' ');
-                    let parts = clean.trim().split(/[\s+-]+/);
-                    let feet = parseFloat(parts[0]) || 0;
-                    let inches = parts[1] ? parseFraction(parts[1]) : 0;
-                    return (feet * 12 + inches) * 25.4;
-                } else {
-                    let totalInches = parseFraction(valStr);
-                    return totalInches * 25.4;
-                }
-            }
+    if (unit === 'mm') {
+        return parseFloat(valStr) || 0;
+    } else {
+        if (valStr.includes("'") || valStr.toLowerCase().includes('ft') || (valStr.includes('-') && !valStr.startsWith('-'))) {
+            let clean = valStr.toLowerCase().replace(/"/g, '').replace(/'/g, ' ').replace(/ft/g, ' ').replace(/in/g, ' ');
+            let parts = clean.trim().split(/[\s+-]+/);
+            let feet = parseFloat(parts[0]) || 0;
+            let inches = parts[1] ? parseFraction(parts[1]) : 0;
+            return (feet * 12 + inches) * 25.4;
+        } else {
+            let totalInches = parseFraction(valStr);
+            return totalInches * 25.4;
         }
+    }
+}
 
-        function onStairUnitChange() {
-            const unit = document.getElementById('stairUnit').value;
-            const riseInput = document.getElementById('stairTotalRise');
-            const runInput = document.getElementById('stairRun');
-            
-            let currentValStr = riseInput.value;
-            let riseMm = parseStairRiseInput(currentValStr, previousStairUnit);
+function onStairCodeChange() {
+    const codeStandard = document.getElementById('stairCodeStandard').value;
+    const subTypeWrapper = document.getElementById('stairSubTypeWrapper');
+    const unit = document.getElementById('stairUnit').value;
 
-            let currentRunVal = parseFloat(runInput.value) || (previousStairUnit === 'mm' ? 280 : 11);
-            let runMm = previousStairUnit === 'mm' ? currentRunVal : (currentRunVal * 25.4);
+    if (codeStandard === 'part9') {
+        subTypeWrapper.classList.remove('hidden');
+    } else {
+        subTypeWrapper.classList.add('hidden');
+    }
 
-            document.getElementById('stairRiseLabel').innerText = unit === 'mm' ? 'Floor-to-Floor Height (mm)' : 'Floor-to-Floor Height (e.g. 10\'-0" or 120)';
-            document.getElementById('stairRunLabel').innerText = unit === 'mm' ? 'Tread Run / Depth (mm)' : 'Tread Run / Depth (inches)';
-            
-            document.getElementById('optRiseHeader').innerText = unit === 'mm' 
-                ? 'Output 1: Minimum Risers Solution (Max 180mm Rise)' 
-                : 'Output 1: Minimum Risers Solution (Max 7.09" Rise)';
+    const subType = document.getElementById('stairSubType').value;
+    let defaultMinRunMm = (codeStandard === 'part9' && subType === 'private') ? 255 : 280;
+    let defaultMaxRiseMm = (codeStandard === 'part9' && subType === 'private') ? 200 : 180;
 
-            if (unit === 'in') {
-                riseInput.value = riseMm > 0 ? formatNumber(riseMm / 25.4) : "0";
-                runInput.value = userModifiedRun ? formatNumber(runMm / 25.4) : "11";
-                runInput.step = "0.25";
-            } else {
-                riseInput.value = riseMm > 0 ? formatNumber(riseMm) : "0";
-                runInput.value = userModifiedRun ? formatNumber(runMm) : "280";
-                runInput.step = "1";
-            }
+    document.getElementById('optRiseHeader').innerText = unit === 'mm' 
+        ? `Output 1: Minimum Risers Solution (Max ${defaultMaxRiseMm}mm Rise)` 
+        : `Output 1: Minimum Risers Solution (Max ${formatNumber(defaultMaxRiseMm/25.4)}\" Rise)`;
 
-            previousStairUnit = unit;
-            userModifiedTargetRisers = false; 
-            calculateStairs();
+    if (!userModifiedRun) {
+        document.getElementById('stairRun').value = unit === 'mm' ? defaultMinRunMm : formatNumber(defaultMinRunMm / 25.4);
+    }
+
+    userModifiedTargetRisers = false;
+    calculateStairs();
+}
+
+function onStairUnitChange() {
+    const unit = document.getElementById('stairUnit').value;
+    const riseInput = document.getElementById('stairTotalRise');
+    const runInput = document.getElementById('stairRun');
+    const codeStandard = document.getElementById('stairCodeStandard').value;
+    const subType = document.getElementById('stairSubType').value;
+    
+    let defaultMinRunMm = (codeStandard === 'part9' && subType === 'private') ? 255 : 280;
+    let defaultMaxRiseMm = (codeStandard === 'part9' && subType === 'private') ? 200 : 180;
+
+    let currentValStr = riseInput.value;
+    let riseMm = parseStairRiseInput(currentValStr, previousStairUnit);
+
+    let currentRunVal = parseFloat(runInput.value) || (previousStairUnit === 'mm' ? defaultMinRunMm : (defaultMinRunMm / 25.4));
+    let runMm = previousStairUnit === 'mm' ? currentRunVal : (currentRunVal * 25.4);
+
+    document.getElementById('stairRiseLabel').innerText = unit === 'mm' ? 'Floor-to-Floor Height (mm)' : 'Floor-to-Floor Height (e.g. 10\'-0" or 120)';
+    document.getElementById('stairRunLabel').innerText = unit === 'mm' ? 'Tread Run / Depth (mm)' : 'Tread Run / Depth (inches)';
+    
+    document.getElementById('optRiseHeader').innerText = unit === 'mm' 
+        ? `Output 1: Minimum Risers Solution (Max ${defaultMaxRiseMm}mm Rise)` 
+        : `Output 1: Minimum Risers Solution (Max ${formatNumber(defaultMaxRiseMm/25.4)}\" Rise)`;
+
+    if (unit === 'in') {
+        riseInput.value = riseMm > 0 ? formatNumber(riseMm / 25.4) : "0";
+        runInput.value = userModifiedRun ? formatNumber(runMm / 25.4) : formatNumber(defaultMinRunMm / 25.4);
+        runInput.step = "0.25";
+    } else {
+        riseInput.value = riseMm > 0 ? formatNumber(riseMm) : "0";
+        runInput.value = userModifiedRun ? formatNumber(runMm) : defaultMinRunMm;
+        runInput.step = "1";
+    }
+
+    previousStairUnit = unit;
+    userModifiedTargetRisers = false; 
+    calculateStairs();
+}
+
+function markRunModified() {
+    userModifiedRun = true;
+    calculateStairs();
+}
+
+function markTargetRisersModified() {
+    userModifiedTargetRisers = true;
+    calculateStairs();
+}
+
+function calculateStairs() {
+    const unit = document.getElementById('stairUnit').value;
+    const riseStr = document.getElementById('stairTotalRise').value;
+    const totalRiseMm = parseStairRiseInput(riseStr, unit);
+    
+    const codeStandard = document.getElementById('stairCodeStandard').value;
+    const subType = document.getElementById('stairSubType').value;
+
+    let maxRiseMm = 180;
+    let minRiseMm = 125;
+    let minRunMm = 280;
+    let maxRunMm = 355;
+
+    if (codeStandard === 'part9') {
+        if (subType === 'private') {
+            maxRiseMm = 200;
+            minRiseMm = 125;
+            minRunMm = 255;
+            maxRunMm = 355;
+        } else { // public
+            maxRiseMm = 180;
+            minRiseMm = 125;
+            minRunMm = 280;
+            maxRunMm = Infinity;
         }
+    } else { // part3
+        maxRiseMm = 180;
+        minRiseMm = 125;
+        minRunMm = 280;
+        maxRunMm = 355;
+    }
 
-        function markRunModified() {
-            userModifiedRun = true;
-            calculateStairs();
+    if (!userModifiedRun) {
+        document.getElementById('stairRun').value = unit === 'mm' ? minRunMm : formatNumber(minRunMm / 25.4);
+    }
+
+    const totalRiseInches = totalRiseMm / 25.4;
+    const comparisonRise = unit === 'mm' ? totalRiseMm : totalRiseInches;
+    
+    const maxR = unit === 'mm' ? maxRiseMm : (maxRiseMm / 25.4);
+    const minR = unit === 'mm' ? minRiseMm : (minRiseMm / 25.4);
+    const minRunL = unit === 'mm' ? minRunMm : (minRunMm / 25.4);
+    const maxRunL = maxRunMm === Infinity ? Infinity : (unit === 'mm' ? maxRunMm : (maxRunMm / 25.4));
+
+    const activeRunVal = parseFloat(document.getElementById('stairRun').value) || minRunL;
+
+    if (comparisonRise <= 0) {
+        document.getElementById('optRisers').innerText = "0";
+        document.getElementById('optRise').innerText = unit === 'mm' ? "0 mm" : "0\"";
+        document.getElementById('optRun').innerText = unit === 'mm' ? `${minRunMm} mm` : `${formatNumber(minRunMm/25.4)}\"`;
+        document.getElementById('optTotalRun').innerText = unit === 'mm' ? "0 mm" : "0\"";
+        document.getElementById('optLandings').innerText = "0 Landings";
+        document.getElementById('optLandings').className = "font-mono text-emerald-600 font-bold";
+        
+        document.getElementById('customRisers').innerText = "0";
+        document.getElementById('customRise').innerText = unit === 'mm' ? "0 mm" : "0\"";
+        document.getElementById('customTotalRun').innerText = unit === 'mm' ? "0 mm" : "0\"";
+        
+        const box = document.getElementById('stairComplianceBox');
+        const text = document.getElementById('stairComplianceText');
+        box.className = "p-3 rounded-lg border bg-slate-50 border-slate-200 text-xs transition-colors mt-2";
+        text.className = "font-medium text-slate-500";
+        text.innerText = "Enter floor-to-floor height to begin evaluation.";
+        return;
+    }
+
+    const minRisers = Math.ceil(comparisonRise / maxR);
+    const optimizedRise = comparisonRise / minRisers;
+    
+    const targetInputElem = document.getElementById('stairTargetRisersCount');
+    if (!userModifiedTargetRisers || parseInt(targetInputElem.value) <= 0) {
+        targetInputElem.value = minRisers;
+    }
+    const customRisers = parseInt(targetInputElem.value) || minRisers;
+
+    let optTotalRunVal = (minRisers - 1) * minRunL;
+
+    document.getElementById('optRisers').innerText = minRisers;
+    
+    if (unit === 'mm') {
+        document.getElementById('optRise').innerText = formatNumber(optimizedRise) + ' mm';
+        document.getElementById('optRun').innerText = minRunMm + ' mm';
+        document.getElementById('optTotalRun').innerText = formatNumber(optTotalRunVal) + ' mm';
+    } else {
+        let fracStr = formatInchesToFrac(optimizedRise);
+        document.getElementById('optRise').innerText = `${fracStr} (${formatNumber(optimizedRise)})`;
+        document.getElementById('optRun').innerText = `${formatNumber(minRunMm/25.4)}\"`;
+
+        let optTotalInches = optTotalRunVal;
+        let optTotalFt = Math.floor(optTotalInches / 12);
+        let optTotalRemIn = optTotalInches % 12;
+        let optTotalFtInStr = optTotalFt > 0 ? `${optTotalFt}'-${formatInchesToFrac(optTotalRemIn)}` : formatInchesToFrac(optTotalRemIn);
+        
+        document.getElementById('optTotalRun').innerText = `${optTotalFtInStr} (${formatNumber(optTotalInches)})`;
+    }
+
+    let requiredLandings = 0;
+    let flightHeightLimit = unit === 'mm' ? 3700 : 145.6;
+    if (comparisonRise > flightHeightLimit) {
+        let flights = Math.ceil(comparisonRise / flightHeightLimit);
+        requiredLandings = flights - 1;
+    }
+    
+    const landingElem = document.getElementById('optLandings');
+    if (requiredLandings > 0) {
+        landingElem.innerText = requiredLandings + (requiredLandings === 1 ? ' Landing Required' : ' Landings Required');
+        landingElem.className = "font-mono text-amber-600 font-bold";
+    } else {
+        landingElem.innerText = "0 Landings (Single Flight OK)";
+        landingElem.className = "font-mono text-emerald-600 font-bold";
+    }
+
+    const actualRise = comparisonRise / customRisers;
+    const totalRunVal = (customRisers - 1) * activeRunVal;
+
+    document.getElementById('customRisers').innerText = customRisers;
+    
+    if (unit === 'mm') {
+        document.getElementById('customRise').innerText = formatNumber(actualRise) + ' mm';
+        document.getElementById('customTotalRun').innerText = formatNumber(totalRunVal) + ' mm';
+    } else {
+        let fracStrCust = formatInchesToFrac(actualRise);
+        document.getElementById('customRise').innerText = `${fracStrCust} (${formatNumber(actualRise)})`;
+        
+        let totalRunInches = totalRunVal; 
+        let totalRunFt = Math.floor(totalRunInches / 12);
+        let totalRunRemIn = totalRunInches % 12;
+        let totalRunFtInStr = totalRunFt > 0 ? `${totalRunFt}'-${formatInchesToFrac(totalRunRemIn)}` : formatInchesToFrac(totalRunRemIn);
+        
+        document.getElementById('customTotalRun').innerText = `${totalRunFtInStr} (${formatNumber(totalRunInches)})`;
+    }
+
+    const box = document.getElementById('stairComplianceBox');
+    const text = document.getElementById('stairComplianceText');
+
+    let errors = [];
+
+    if (actualRise < minR || actualRise > maxR) {
+        errors.push(`Actual Rise (${unit === 'mm' ? formatNumber(actualRise) + 'mm' : formatInchesToFrac(actualRise)}) exceeds limits (${unit === 'mm' ? minRiseMm + '-' + maxRiseMm + 'mm' : formatNumber(minRiseMm/25.4) + '" - ' + formatNumber(maxRiseMm/25.4) + '"'}).`);
+    }
+    if (activeRunVal > 0) {
+        if (activeRunVal < minRunL) {
+            errors.push(`Tread Run is below minimum limit (${unit === 'mm' ? minRunMm + 'mm' : formatNumber(minRunMm/25.4) + '"'}).`);
         }
-
-        function markTargetRisersModified() {
-            userModifiedTargetRisers = true;
-            calculateStairs();
+        if (maxRunL !== Infinity && activeRunVal > maxRunL) {
+            errors.push(`Tread Run exceeds maximum limit (${unit === 'mm' ? maxRunMm + 'mm' : formatNumber(maxRunMm/25.4) + '"'}).`);
         }
+    }
 
-        function calculateStairs() {
-            const unit = document.getElementById('stairUnit').value;
-            const riseStr = document.getElementById('stairTotalRise').value;
-            const totalRiseMm = parseStairRiseInput(riseStr, unit);
-            
-            const totalRiseInches = totalRiseMm / 25.4;
-            const comparisonRise = unit === 'mm' ? totalRiseMm : totalRiseInches;
-            
-            const maxR = unit === 'mm' ? 180 : (180 / 25.4);
-            const minR = unit === 'mm' ? 125 : (125 / 25.4);
-
-            const defaultRun = unit === 'mm' ? 280 : 11;
-            const currentRunVal = parseFloat(document.getElementById('stairRun').value) || 0;
-            if (currentRunVal <= 0 && !userModifiedRun) {
-                document.getElementById('stairRun').value = defaultRun;
-            }
-            const activeRunVal = parseFloat(document.getElementById('stairRun').value) || defaultRun;
-
-            if (comparisonRise <= 0) {
-                document.getElementById('optRisers').innerText = "0";
-                document.getElementById('optRise').innerText = unit === 'mm' ? "0 mm" : "0\"";
-                document.getElementById('optRun').innerText = unit === 'mm' ? "280 mm" : "11\"";
-                document.getElementById('optTotalRun').innerText = unit === 'mm' ? "0 mm" : "0\"";
-                document.getElementById('optLandings').innerText = "0 Landings";
-                document.getElementById('optLandings').className = "font-mono text-emerald-600 font-bold";
-                
-                document.getElementById('customRisers').innerText = "0";
-                document.getElementById('customRise').innerText = unit === 'mm' ? "0 mm" : "0\"";
-                document.getElementById('customTotalRun').innerText = unit === 'mm' ? "0 mm" : "0\"";
-                
-                const box = document.getElementById('stairComplianceBox');
-                const text = document.getElementById('stairComplianceText');
-                box.className = "p-3 rounded-lg border bg-slate-50 border-slate-200 text-xs transition-colors mt-2";
-                text.className = "font-medium text-slate-500";
-                text.innerText = "Enter floor-to-floor height to begin evaluation.";
-                return;
-            }
-
-            const minRisers = Math.ceil(comparisonRise / maxR);
-            const optimizedRise = comparisonRise / minRisers;
-            
-            const targetInputElem = document.getElementById('stairTargetRisersCount');
-            if (!userModifiedTargetRisers || parseInt(targetInputElem.value) <= 0) {
-                targetInputElem.value = minRisers;
-            }
-            const customRisers = parseInt(targetInputElem.value) || minRisers;
-
-            // --- OUTPUT 1 CALCULATIONS (Fixed to use default run and stay independent of custom run edits) ---
-            const defaultRunVal = unit === 'mm' ? 280 : 11;
-            let optTotalRunVal = (minRisers - 1) * (unit === 'mm' ? defaultRunVal : (defaultRunVal * 25.4));
-
-            document.getElementById('optRisers').innerText = minRisers;
-            
-            if (unit === 'mm') {
-                document.getElementById('optRise').innerText = formatNumber(optimizedRise) + ' mm';
-                document.getElementById('optRun').innerText = '280 mm';
-                document.getElementById('optTotalRun').innerText = formatNumber(optTotalRunVal) + ' mm';
-            } else {
-                let fracStr = formatInchesToFrac(optimizedRise);
-                document.getElementById('optRise').innerText = `${fracStr} (${formatNumber(optimizedRise)})`;
-                document.getElementById('optRun').innerText = `${defaultRunVal}"`;
-
-                let optTotalInches = optTotalRunVal / 25.4;
-                let optTotalFt = Math.floor(optTotalInches / 12);
-                let optTotalRemIn = optTotalInches % 12;
-                let optTotalFtInStr = optTotalFt > 0 ? `${optTotalFt}'-${formatInchesToFrac(optTotalRemIn)}` : formatInchesToFrac(optTotalRemIn);
-                
-                document.getElementById('optTotalRun').innerText = `${optTotalFtInStr} (${formatNumber(optTotalInches)})`;
-            }
-
-            let requiredLandings = 0;
-            let flightHeightLimit = unit === 'mm' ? 3700 : 145.6;
-            if (comparisonRise > flightHeightLimit) {
-                let flights = Math.ceil(comparisonRise / flightHeightLimit);
-                requiredLandings = flights - 1;
-            }
-            
-            const landingElem = document.getElementById('optLandings');
-            if (requiredLandings > 0) {
-                landingElem.innerText = requiredLandings + (requiredLandings === 1 ? ' Landing Required' : ' Landings Required');
-                landingElem.className = "font-mono text-amber-600 font-bold";
-            } else {
-                landingElem.innerText = "0 Landings (Single Flight OK)";
-                landingElem.className = "font-mono text-emerald-600 font-bold";
-            }
-
-            // --- OUTPUT 2 CALCULATIONS (Custom Target Layout Analysis) ---
-            const actualRise = comparisonRise / customRisers;
-            const totalRunVal = (customRisers - 1) * (unit === 'mm' ? activeRunVal : (activeRunVal * 25.4));
-
-            document.getElementById('customRisers').innerText = customRisers;
-            
-            if (unit === 'mm') {
-                document.getElementById('customRise').innerText = formatNumber(actualRise) + ' mm';
-                document.getElementById('customTotalRun').innerText = formatNumber(totalRunVal) + ' mm';
-            } else {
-                let fracStrCust = formatInchesToFrac(actualRise);
-                document.getElementById('customRise').innerText = `${fracStrCust} (${formatNumber(actualRise)})`;
-                
-                let totalRunInches = totalRunVal / 25.4; 
-                let totalRunFt = Math.floor(totalRunInches / 12);
-                let totalRunRemIn = totalRunInches % 12;
-                let totalRunFtInStr = totalRunFt > 0 ? `${totalRunFt}'-${formatInchesToFrac(totalRunRemIn)}` : formatInchesToFrac(totalRunRemIn);
-                
-                document.getElementById('customTotalRun').innerText = `${totalRunFtInStr} (${formatNumber(totalRunInches)})`;
-            }
-
-            const box = document.getElementById('stairComplianceBox');
-            const text = document.getElementById('stairComplianceText');
-
-            let errors = [];
-            let minRunL = unit === 'mm' ? 280 : 11;
-            let maxRunL = unit === 'mm' ? 355 : 14;
-
-            if (actualRise < minR || actualRise > maxR) {
-                errors.push(`Actual Rise (${unit === 'mm' ? formatNumber(actualRise) + 'mm' : formatInchesToFrac(actualRise)}) exceeds limits.`);
-            }
-            if (activeRunVal > 0 && (activeRunVal < minRunL || activeRunVal > maxRunL)) {
-                errors.push(`Tread Run (${unit === 'mm' ? activeRunVal + 'mm' : activeRunVal + '"'}) is outside limits.`);
-            }
-
-            if (errors.length === 0) {
-                box.className = "p-3 rounded-lg border bg-emerald-50 border-emerald-200 text-xs transition-colors mt-2";
-                text.className = "font-medium text-emerald-700";
-                text.innerText = "✓ Custom Layout: Compliant with all specified range limits.";
-            } else {
-                box.className = "p-3 rounded-lg border bg-rose-50 border-rose-200 text-xs transition-colors mt-2";
-                text.className = "font-medium text-rose-700";
-                text.innerHTML = "<strong>Warning:</strong> " + errors.join(" ");
-            }
-        }
-
+    if (errors.length === 0) {
+        box.className = "p-3 rounded-lg border bg-emerald-50 border-emerald-200 text-xs transition-colors mt-2";
+        text.className = "font-medium text-emerald-700";
+        text.innerText = "✓ Custom Layout: Compliant with all specified range limits.";
+    } else {
+        box.className = "p-3 rounded-lg border bg-rose-50 border-rose-200 text-xs transition-colors mt-2";
+        text.className = "font-medium text-rose-700";
+        text.innerHTML = "<strong>Warning:</strong> " + errors.join(" ");
+    }
+}
         // --- RAMP CALCULATOR ---
         function onRampRatioInput() {
             const val = document.getElementById('rampRatio').value;
